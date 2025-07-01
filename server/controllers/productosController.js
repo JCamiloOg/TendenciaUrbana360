@@ -1,0 +1,159 @@
+import { getAll, getAllExtra, getDescription, getExtra, getPerfumeria, getProductsCategory, getTallas } from "../models/productos.js";
+
+export async function getProduct(req, res) {
+    try {
+        const categoriasValidas = [
+            'calzado', 'camisas', 'pantalones', 'gafas', 'gorras', 'relojes', 'perfumes', 'vapeadores'
+        ];
+
+        const id = req.params.id
+
+        if (!categoriasValidas.includes(req.params.categoria)) return res.status(404).json({ message: "Pagina no encontrada" });
+
+        let extras;
+        if (req.params.categoria !== 'perfumes') {
+            extras = await getExtra("extras", id)
+        } else {
+            extras = await getExtra("perfumeria", id)
+        }
+
+        const tallas = await getTallas(id);
+        const producto = await getProduct(id);
+
+        let descripcion = undefined;
+
+        if (producto.length <= 0) return res.status(404).json({ title: 'Producto no encontrado', status: '404', message: 'El producto no ha sido encontrado o no existe.' });
+
+
+        if (producto[0].Tipo_Producto === 'Gafas' || producto[0].Tipo_Producto === 'Reloj' || producto[0].Tipo_Producto === 'Gorra' || producto[0].Tipo_Producto === 'Perfume' || producto[0].Tipo_Producto === 'Vapeador') descripcion = await getDescription(id);
+
+        let route;
+
+        switch (producto[0].Tipo_Producto) {
+            case 'Calzado':
+                route = 'calzado';
+                break;
+            case 'Pantalon':
+                route = 'pantalones';
+                break;
+            case 'Camisa':
+                route = 'camisas';
+                break;
+            case 'Gafas':
+                route = 'gafas';
+                break;
+            case 'Reloj':
+                route = 'relojes';
+                break;
+            case 'Gorra':
+                route = 'gorras';
+                break;
+            case 'Perfume':
+                route = 'perfumes';
+                break;
+            case 'Vapeador':
+                route = 'vapeadores';
+                break;
+            default:
+                route = 'producto';
+                break;
+        }
+
+        res.status(200).json({
+            routeImg: route,
+            route: 'producto',
+            extra: extras,
+            tallas: tallas,
+            descripcion: descripcion,
+            data: producto,
+            typeProduct: producto[0].Tipo_Producto
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ message: 'Error al obtener el producto' });
+    }
+}
+
+export async function getProducts(req, res) {
+    try {
+        const categoriasValidas = [
+            'calzado', 'camisas', 'pantalones', 'gafas', 'gorras', 'relojes', 'perfumes', 'vapeadores'
+        ];
+
+        let categoria = req.params.categoria
+
+        let categorias = {
+            calzado: 'Calzado',
+            camisas: 'Camisa',
+            pantalones: 'Pantalon',
+            gafas: 'Gafas',
+            gorras: 'Gorra',
+            relojes: 'Reloj',
+            perfumes: 'Perfume',
+            vapeadores: 'Vapeador'
+        }
+
+        if (!categoriasValidas.includes(categoria)) return res.json('404');
+
+        if (categoria === 'perfumes') {
+
+            let perfumes = await getProductsCategory("Perfume")
+
+            if (perfumes.length <= 0) return res.status(404).json();
+
+            return res.status(200).json({
+                head: 'Perfumes',
+                route: 'perfumes',
+                products: perfumes
+            });
+        }
+        let [products] = await getProductsCategory(categorias[categoria]);
+
+        if (products.length <= 0) return res.status(404).json();
+
+        res.status(200).json({
+            head: categoria.charAt(0).toUpperCase() + categoria.slice(1).toLowerCase(),
+            route: categoria,
+            products: products
+        });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ message: 'Error al obtener los productos' });
+
+    }
+}
+
+export async function getAllProducts(req, res) {
+    try {
+        let productos = await getAllExtra();
+        let productosPerfume = await getPerfumeria();
+
+        productos = productos.concat(productosPerfume);
+
+        let allproduct = await getAll();
+
+        const calzado = allproduct.filter(row => row.Tipo_Producto == 'Calzado');
+        const camisas = allproduct.filter(row => row.Tipo_Producto == 'Camisa');
+        const pantalones = allproduct.filter(row => row.Tipo_Producto == 'Pantalon');
+        const gorras = allproduct.filter(row => row.Tipo_Producto == 'Gorra');
+        const gafas = allproduct.filter(row => row.Tipo_Producto == 'Gafas');
+        const relojes = allproduct.filter(row => row.Tipo_Producto == 'Reloj');
+        const vapers = allproduct.filter(row => row.Tipo_Producto == 'Vapeador');
+        const perfumes = allproduct.filter(row => row.Tipo_Producto == 'Perfume');
+
+        res.status(200).json({
+            products: productos,
+            calzado: calzado,
+            camisas: camisas,
+            pantalones: pantalones,
+            gorras: gorras,
+            gafas: gafas,
+            relojes: relojes,
+            vapers: vapers,
+            perfumes: perfumes
+        });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ message: 'Error al obtener todos los productos' });
+    }
+}

@@ -6,7 +6,7 @@ dotenv.config();
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
-const verifyInfo = async (req, res, next) => {
+export async function checkInfo(req, res, next) {
     if (req.body.direccion || req.body.tel) return next();
     const token = req.cookies.token;
     if (!token) return next();
@@ -21,9 +21,8 @@ const verifyInfo = async (req, res, next) => {
 
     if (!info) return res.redirect('/');
 
-    if (info[0].Direccion == null || info[0].Telefono == null || info[0].Nombre == null || info[0].Apellido == null) return res.render('completeInfo', { head: 'Completa la información restante' });
+    const { Direccion, Telefono, Nombre, Apellido } = info[0];
+    if (!Direccion || !Telefono || !Nombre || !Apellido) return res.status(400).json({ message: "Completa la información" });
 
     next();
 }
-
-export default verifyInfo;

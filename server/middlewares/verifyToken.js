@@ -4,45 +4,42 @@ dotenv.config();
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
-let verify = {
-    verifyToken: (req, res, next) => {
-        const token = req.cookies.token;
-        if (!token) {
-            console.log('No token provided');
-            return res.redirect('/');
-        }
-
-        jwt.verify(token, SECRET_KEY, (err, decoded) => {
-            if (err) {
-                console.log('Token invalido');
-                return res.redirect('/');
-            } else {
-                next();
-            }
-        })
-    },
-    isAdmin: function (req, res, next) {
-        const token = req.cookies.token;
-        let user;
-
-        if (!token) {
-            console.log('No token provided');
-            return res.redirect('/');
-        }
-
-        jwt.verify(token, SECRET_KEY, (err, decoded) => {
-            if (err) {
-                console.log('Token invalido');
-                return res.redirect('/');
-            } else {
-                user = decoded;
-            }
-        })
-        if (user.role !== 'Administrador') {
-            return res.redirect('/');
-        }
-        next();
+export function verifyToken(req, res, next) {
+    const token = req.cookies.token;
+    if (!token) {
+        console.log('No token provided');
+        return res.status(400).json({ redirect: "/" });
     }
+
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        if (err) {
+            console.log('Token invalido');
+            return res.status(400).json({ redirect: "/" });
+        } else {
+            next();
+        }
+    })
 }
 
-export default verify;
+export function isAdmin(req, res, next) {
+    const token = req.cookies.token;
+    let user;
+
+    if (!token) {
+        console.log('No token provided');
+        return res.status(400).json({ redirect: "/" });
+    }
+
+    jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        if (err) {
+            console.log('Token invalido');
+            return res.status(400).json({ redirect: "/" });
+        } else {
+            user = decoded;
+        }
+    })
+    if (user.role !== 'Administrador') {
+        return res.status(400).json({ redirect: "/" });
+    }
+    next();
+}

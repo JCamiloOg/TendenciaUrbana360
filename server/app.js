@@ -8,7 +8,14 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { access } from "fs";
+import cors from "cors"
+
+// middlewares
+import { checkAuth } from "./middlewares/checkLogin.js";
+import { checkInfo } from "./middlewares/checkInfo.js";
+
+import routes from "./routes/index.js";
+import exp from "constants";
 
 // Configura dotEnv
 dotenv.config();
@@ -25,6 +32,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use(cors({
+    origin: process.env.CORS_ORIGIN,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+
+}));
 
 app.use(
     session({
@@ -41,7 +55,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: `${process.env.CORS_ORIGIN}/clientes/auth/google/callback`
+    callbackURL: `${process.env.BACKEND_URL}/clientes/auth/google/callback`
 }, (accessToken, refreshToken, profile, done) => {
     return done(null, profile)
 }));
@@ -53,12 +67,12 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
     done(null, user)
 });
+app.use("/images", express.static(path.join(__dirname, "public/images")));
+app.use(checkAuth);
+app.use(checkInfo);
 
+app.use("/", routes);
 
-
-app.use((req, res, next) => {
-
-});
 
 export default app
 
