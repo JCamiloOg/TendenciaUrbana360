@@ -3,7 +3,7 @@ import conn from "../config/db.js";
 
 export async function getExtra(table, id) {
     try {
-        const [rows] = await conn.query(`SELECT e.ID, e.Imagen, c.Color, s.Sexo, t.Tipo FROM ${table} e JOIN colores c ON c.ID = e.Color JOIN sexo s ON e.Sexo = s.ID JOIN tipo t ON t.ID = e.Tipo  WHERE e.Id_producto = ?`, [id]);
+        const [rows] = await conn.query(`SELECT e.ID, e.Imagen, ${table === "perfumeria" ? "" : "c.Color,"} s.Sexo, t.Tipo FROM ${table} e ${table === "perfumeria" ? "" : "JOIN colores c ON c.ID = e.Color"} JOIN sexo s ON e.Sexo = s.ID JOIN tipo t ON t.ID = e.Tipo  WHERE e.Id_producto = ?`, [id]);
 
         return rows;
     } catch (e) {
@@ -36,7 +36,7 @@ export async function getProduct(id) {
 
 export async function getDescription(id) {
     try {
-        const [rows] = conn.query("SELECT Descripcion FROM descripciones WHERE Id_producto = ?", [id]);
+        const [rows] = await conn.query("SELECT Descripcion FROM descripciones WHERE Id_producto = ?", [id]);
         return rows;
     } catch (e) {
         console.error(e);
