@@ -8,7 +8,7 @@ export default function ButtonViewMore() {
     }
     return (
         <button onClick={toProducts}
-            className="bg-[#ADD8E6] px-10 py-3 text-white relative overflow-hidden z-30 group hover:bg-sky-800 transition-all duration-500 rounded tracking-wider font-semibold cursor-pointer inline-flex"
+            className="bg-[#004aad] px-10 py-3 text-white relative overflow-hidden z-30 group hover:bg-[#002960] transition-all duration-500 rounded tracking-wider font-semibold cursor-pointer inline-flex"
         >
             Ver más
 

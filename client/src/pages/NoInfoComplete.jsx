@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import "../style/button.css";
 import { Toast } from "../hooks/useToastAlert";
 import { faPhone, faHouse, faUser } from "@fortawesome/free-solid-svg-icons"
-import { completeInfo } from "../services/usersServices";
+import { completeInfo } from "../services/users/usersServices";
 import { useState } from "react";
 
 

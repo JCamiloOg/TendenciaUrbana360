@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import logo from "../../assets/TendenciaUrbanaLogoTransparente.svg"
 import { useClickOutSide } from '../../hooks/useClickOutSide';
 import { useForm } from 'react-hook-form';
-import { register as registerSubmit } from '../../services/usersServices';
+import { register as registerSubmit } from '../../services/users/usersServices';
 import { Toast } from '../../hooks/useToastAlert';
 import InputModal from '../Inputs/InputModal';
 

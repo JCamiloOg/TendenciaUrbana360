@@ -2,7 +2,7 @@ import googleLogo from "../../assets/google-color.svg";
 import { useEffect, useRef, useState } from 'react';
 import { useClickOutSide } from '../../hooks/useClickOutSide';
 import { useForm } from "react-hook-form";
-import { login } from "../../services/usersServices";
+import { login } from "../../services/users/usersServices";
 // import Swal from "sweetalert2";
 // import withReactContent from "sweetalert2-react-content";
 

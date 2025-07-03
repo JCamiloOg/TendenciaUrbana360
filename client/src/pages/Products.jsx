@@ -62,9 +62,9 @@ export default function Products() {
             <div className="container pt-24 mx-auto px-10">
                 <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 justify-center ">
                     {
-                        products.map(({ Id_Product, Nombre, Precio, Imagen }) => {
+                        products.map(({ Id_producto, Nombre, Precio, Imagen, Tipo_Producto }) => {
                             return (
-                                <ProductCard ID={Id_Product} img={Imagen} name={Nombre} price={Precio} key={Id_Product} />
+                                <ProductCard ID={Id_producto} img={Imagen} name={Nombre} price={Precio} key={Id_producto} typeProduct={Tipo_Producto} />
                             )
                         })
                     }

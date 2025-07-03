@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
-import { checkUser } from "../services/usersServices";
+import { checkUser } from "../services/users/usersServices";
 import Loader from "../components/Loader";
 import { usePageLoader } from "../hooks/useLoader";
 import Error from "./Error";

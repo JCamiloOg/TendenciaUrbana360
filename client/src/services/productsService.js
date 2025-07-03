@@ -7,3 +7,8 @@ export async function getProducts() {
 export async function getAllProducts() {
     return await axiosInstance.get(`/products`);
 }
+
+export async function getProductByID(type, id) {
+    return await axiosInstance.get(`/products/${type}/${id}`)
+
+}

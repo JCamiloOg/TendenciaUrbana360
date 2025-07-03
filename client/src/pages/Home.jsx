@@ -64,12 +64,12 @@ export default function Home() {
             <Title text={"Lo último en la tendencia urbana"} />
             <Divider />
             <div id="portafolio" className="container mx-auto px-10">
-                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 justify-center">
+                <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 justify-center">
                     {
                         products.length > 0 ?
-                            products.map(({ Id_producto, Nombre, Precio, Imagen }) => {
+                            products.map(({ Id_producto, Nombre, Precio, Imagen, Tipo_Producto }) => {
                                 return (
-                                    <ProductCard ID={Id_producto} key={Id_producto} img={Imagen} name={Nombre} price={Precio} />
+                                    <ProductCard ID={Id_producto} key={Id_producto} img={Imagen} name={Nombre} price={Precio} typeProduct={Tipo_Producto} />
                                 )
                             })
                             :

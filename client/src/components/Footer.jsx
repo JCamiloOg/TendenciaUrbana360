@@ -8,7 +8,7 @@ import { generateBubbles } from "../hooks/useBubbles";
 export default function Footer({ count = 250 }) {
     const bubbles = generateBubbles(count);
     return (
-        <div className="bodyFooter mt-20">
+        <div className="bodyFooter mt-30">
             <div className="footer">
                 <div className="bubbles">
                     {

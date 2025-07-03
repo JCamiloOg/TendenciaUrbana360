@@ -2,20 +2,20 @@
 import { Link } from "react-router-dom";
 import { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons"
+import { faBars, faUser } from "@fortawesome/free-solid-svg-icons"
 // hookjs
 import { useMobileMenu, useUserMenu } from "../../hooks/useMobileMenu";
 import { useClickOutSide } from "../../hooks/useClickOutSide";
 import { Toast } from "../../hooks/useToastAlert"
 // services
-import { logOut } from "../../services/usersServices";
+import { logOut } from "../../services/users/usersServices";
 // imgs
 import navbarImg from "../../assets/TR3Logo340px.svg";
-import profileImg from "../../assets/profileImg.jpg";
 
 export default function NavBar({ isLogin, openLogin, openRegister, active }) {
     const [home, setHome] = useState(false);
     const [products, setProducts] = useState(false);
+    const [profile, setProfile] = useState(false);
 
     const { isOpen, toggle, close } = useMobileMenu();
     const { isOpenUser, toggleUser, closeUser } = useUserMenu();
@@ -33,6 +33,8 @@ export default function NavBar({ isLogin, openLogin, openRegister, active }) {
             case "Products":
                 setProducts(true);
                 break;
+            case "Profile":
+                setProfile(true);
         }
     })
 
@@ -57,7 +59,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active }) {
     useClickOutSide([menuRefUser, buttonRefUser], closeUser);
     return (
         <>
-            <nav className="bg-[#004aad] text-white shadow-lg fixed top-0 w-full">
+            <nav className="bg-[#004aad] text-white shadow-lg z-49 fixed top-0 w-full">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
@@ -66,10 +68,10 @@ export default function NavBar({ isLogin, openLogin, openRegister, active }) {
                                 <span className="ml-2 text-xl font-bold"></span>
                             </Link>
                             <div className="hidden md:ml-6 md:flex md:space-x-8">
-                                <Link to="/" className={`border-b-2 ${home ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white border-transparent"} px-1 pt-1 inline-flex items-center text-sm font-medium transition-all duration-300`}>
+                                <Link to="/" className={`border-b-2 ${home ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white border-transparent"} px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300`}>
                                     Inicio
                                 </Link>
-                                <Link to="/products" className={`${products ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white"}  border-b-2 border-transparent  px-1 pt-1 inline-flex items-center text-sm font-medium transition-all duration-300`}>
+                                <Link to="/products" className={`${products ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white"}  border-b-2 border-transparent  px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300`}>
                                     Productos
                                 </Link>
                             </div>
@@ -89,9 +91,9 @@ export default function NavBar({ isLogin, openLogin, openRegister, active }) {
                                 isLogin ?
                                     <div className="ml-3 relative hidden md:block">
                                         <div>
-                                            <button ref={buttonRefUser} type="button" className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-yellow-500" id="user-menu-button" onClick={toggleUser} aria-expanded={isOpenUser ? "true" : "false"} aria-haspopup="true">
+                                            <button ref={buttonRefUser} type="button" className="bg-gray-800 p-3 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-yellow-500" id="user-menu-button" onClick={toggleUser} aria-expanded={isOpenUser ? "true" : "false"} aria-haspopup="true">
                                                 <span className="sr-only">Open user menu</span>
-                                                <img className="h-8 w-8 rounded-full" src={profileImg} alt="" />
+                                                <FontAwesomeIcon icon={faUser} size="xl" />
                                             </button>
                                         </div>
 
@@ -141,7 +143,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active }) {
                             <div className="pt-4 pb-3 border-t border-gray-700">
                                 <div className="flex items-center px-5">
                                     <div className="flex-shrink-0">
-                                        <img className="h-10 w-10 rounded-full" src={profileImg} alt="" />
+                                        <FontAwesomeIcon icon={faUser} size="xl" />
                                     </div>
                                     <div className="ml-3">
                                         <div className="text-base font-medium text-white">{isLogin.Nombre + " " + isLogin.Apellido}</div>
@@ -149,7 +151,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active }) {
                                     </div>
                                 </div>
                                 <div className="mt-3 px-2 space-y-1">
-                                    <Link to={"/clients/profile"} className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">Tu perfil</Link>
+                                    <Link to={"/clients/profile"} className={`block px-3 py-2 rounded-md text-base font-medium ${profile ? "bg-yellow-500 text-black" : "text-gray-400 hover:text-white hover:bg-gray-700"}  `}>Tu perfil</Link>
                                     <a onClick={exit} role="button" className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">Cerrar sesión</a>
                                 </div>
                             </div>

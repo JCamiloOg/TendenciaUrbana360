@@ -1,4 +1,4 @@
-import { axiosInstance } from "../config.js";
+import { axiosInstance } from "../../config.js";
 
 export async function login(data) {
     return await axiosInstance.post(`/clientes/login`, data);
