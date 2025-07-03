@@ -1,4 +1,4 @@
-import { getAll, getAllExtra, getDescription, getExtra, getPerfumeria, getProductsCategory, getTallas } from "../models/productos.js";
+import { getAll, getAllExtra, getDescription, getExtra, getPerfumeria, getProductsCategory, getTallas, getProduct as getProductByID } from "../models/productos.js";
 
 export async function getProduct(req, res) {
     try {
@@ -8,21 +8,22 @@ export async function getProduct(req, res) {
 
         const id = req.params.id
 
-        if (!categoriasValidas.includes(req.params.categoria)) return res.status(404).json({ message: "Pagina no encontrada" });
+
+        if (!categoriasValidas.includes(req.params.category)) return res.status(404).json({ message: "Pagina no encontrada" });
 
         let extras;
-        if (req.params.categoria !== 'perfumes') {
+        if (req.params.category !== 'perfumes') {
             extras = await getExtra("extras", id)
         } else {
             extras = await getExtra("perfumeria", id)
         }
 
         const tallas = await getTallas(id);
-        const producto = await getProduct(id);
+        const producto = await getProductByID(id);
 
         let descripcion = undefined;
 
-        if (producto.length <= 0) return res.status(404).json({ title: 'Producto no encontrado', status: '404', message: 'El producto no ha sido encontrado o no existe.' });
+        if (producto.length <= 0) return res.status(404).json({ title: 'Producto no encontrado', message: 'El producto no ha sido encontrado o no existe.' });
 
 
         if (producto[0].Tipo_Producto === 'Gafas' || producto[0].Tipo_Producto === 'Reloj' || producto[0].Tipo_Producto === 'Gorra' || producto[0].Tipo_Producto === 'Perfume' || producto[0].Tipo_Producto === 'Vapeador') descripcion = await getDescription(id);
@@ -60,12 +61,10 @@ export async function getProduct(req, res) {
         }
 
         res.status(200).json({
-            routeImg: route,
-            route: 'producto',
             extra: extras,
             tallas: tallas,
             descripcion: descripcion,
-            data: producto,
+            data: producto[0],
             typeProduct: producto[0].Tipo_Producto
         })
     } catch (e) {
@@ -80,7 +79,7 @@ export async function getProducts(req, res) {
             'calzado', 'camisas', 'pantalones', 'gafas', 'gorras', 'relojes', 'perfumes', 'vapeadores'
         ];
 
-        let categoria = req.params.categoria
+        let categoria = req.params.category
 
         let categorias = {
             calzado: 'Calzado',
