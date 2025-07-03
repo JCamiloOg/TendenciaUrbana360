@@ -129,22 +129,26 @@ export async function updateInfo(req, res) {
 }
 
 export async function getDetailOrder(req, res) {
-    let id = req.params.id;
-    let token = req.cookies.token;
-    let user;
+    try {
+        let id = req.params.id;
+        let token = req.cookies.token;
+        let user;
 
-    jwt.verify(token, SECRET_KEY, (err, decode) => {
-        if (err) return res.status(400).json({ message: 'Error al obtener los detalles' })
-        user = decode;
-    });
+        jwt.verify(token, SECRET_KEY, (err, decode) => {
+            if (err) return res.status(400).json({ message: 'Error al obtener los detalles' })
+            user = decode;
+        });
 
 
-    const [detailOrder] = await getAllDetailOrder(id, user.id);
-    const [detailPerfume] = await getAllDetailPerfume(id, user.id);
+        const detailOrder = await getAllDetailOrder(id, user.id);
+        const detailPerfume = await getAllDetailPerfume(id, user.id);
 
-    const all = detailOrder.concat(detailPerfume);
+        const all = detailOrder.concat(detailPerfume);
 
-    return res.status(200).json(all);
+        return res.status(200).json(all);
+    } catch (e) {
+        res.status(500).json({ message: 'Error al obtener los detalles del pedido.' })
+    }
 }
 
 
