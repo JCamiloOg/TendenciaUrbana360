@@ -5,7 +5,7 @@ import { faInstagram, faWhatsapp, faTiktok } from "@fortawesome/free-brands-svg-
 import "../style/footer.css"
 import { generateBubbles } from "../hooks/useBubbles";
 
-export default function Footer({ count = 250 }) {
+export default function Footer({ count = 100 }) {
     const bubbles = generateBubbles(count);
     return (
         <div className="bodyFooter mt-30">
