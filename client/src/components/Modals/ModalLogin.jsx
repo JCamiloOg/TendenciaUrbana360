@@ -1,12 +1,7 @@
 import googleLogo from "../../assets/google-color.svg";
-import { useEffect, useRef, useState } from 'react';
-import { useClickOutSide } from '../../hooks/useClickOutSide';
+import { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { login } from "../../services/users/usersServices";
-// import Swal from "sweetalert2";
-// import withReactContent from "sweetalert2-react-content";
-
-// const MySwal = withReactContent(Swal);
 import { Toast } from "../../hooks/useToastAlert";
 import { API_URL } from "../../config";
 import InputModal from "../Inputs/InputModal";
@@ -15,7 +10,6 @@ import InputModal from "../Inputs/InputModal";
 export default function ModalLogin({ isOpenModal, isVisible, close, openRegister }) {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [disabled, setDisabled] = useState(null);
-    const menuRef = useRef(null);
 
 
     const Onsubmit = async (data) => {
@@ -43,7 +37,6 @@ export default function ModalLogin({ isOpenModal, isVisible, close, openRegister
         window.location.href = `${API_URL}/clientes/auth/google`
     }
 
-    useClickOutSide(menuRef, close);
     return (
         <>
             {isOpenModal && (
@@ -53,7 +46,7 @@ export default function ModalLogin({ isOpenModal, isVisible, close, openRegister
                     className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"
                         } bg-black/40 backdrop-blur-sm`}
                 >
-                    <div ref={menuRef}
+                    <div
                         className={`relative p-4 w-full max-w-md transition-all duration-300 transform ${isVisible ? "scale-100" : "scale-90"
                             }`}
                     >
