@@ -20,16 +20,17 @@ export async function getProducts(req, res) {
         const perfumes = allproduct.filter(row => row.Tipo_Producto == 'Perfume');
 
         res.status(200).json({
-            head: 'Tendencia Urbana 360',
             products: productos,
-            calzado: calzado,
-            camisas: camisas,
-            pantalones: pantalones,
-            gorras: gorras,
-            gafas: gafas,
-            relojes: relojes,
-            vapers: vapers,
-            perfumes: perfumes
+            productsLength: {
+                calzado: calzado.length,
+                camisas: camisas.length,
+                pantalones: pantalones.length,
+                gorras: gorras.length,
+                gafas: gafas.length,
+                relojes: relojes.length,
+                vapers: vapers.length,
+                perfumes: perfumes.length
+            }
         });
     } catch (e) {
         console.error(e);
