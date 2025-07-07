@@ -2,7 +2,11 @@
 import { Link } from "react-router-dom";
 import { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faUser } from "@fortawesome/free-solid-svg-icons"
+import { faBars, faBoxesStacked, faClock, faGlasses, faHatCowboy, faJoint, faShoePrints, faSprayCanSparkles, faTShirt, faUser } from "@fortawesome/free-solid-svg-icons"
+
+// components 
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu"
+
 // hookjs
 import { useMobileMenu, useUserMenu } from "../../hooks/useMobileMenu";
 import { useClickOutSide } from "../../hooks/useClickOutSide";
@@ -12,7 +16,7 @@ import { logOut } from "../../services/users/usersServices";
 // imgs
 import navbarImg from "../../assets/TR3Logo340px.svg";
 
-export default function NavBar({ isLogin, openLogin, openRegister, active }) {
+export default function NavBar({ isLogin, openLogin, openRegister, active, productsLenght }) {
     const [home, setHome] = useState(false);
     const [products, setProducts] = useState(false);
     const [profile, setProfile] = useState(false);
@@ -71,9 +75,121 @@ export default function NavBar({ isLogin, openLogin, openRegister, active }) {
                                 <Link to="/" className={`border-b-2 ${home ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white border-transparent"} px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300`}>
                                     Inicio
                                 </Link>
-                                <Link to="/products" className={`${products ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white"}  border-b-2 border-transparent  px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300`}>
-                                    Productos
-                                </Link>
+                                {
+                                    home || products ?
+                                        <NavigationMenu>
+                                            <NavigationMenuList >
+                                                <NavigationMenuItem >
+                                                    <NavigationMenuTrigger className={`!bg-transparent  data-[state=open]:!text-white  rounded-none hover:!bg-transparent hover:!text-white border-b-2 ${products ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white border-transparent"} px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300`}>Productos</NavigationMenuTrigger>
+                                                    <NavigationMenuContent className={`bg-[#004aad] !border-none`}>
+                                                        <ul className="grid w-[200px] gap-4">
+                                                            <li>
+                                                                <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                                    <Link to="/products" className="flex-row items-center gap-2">
+                                                                        <FontAwesomeIcon className="text-white" icon={faBoxesStacked} />
+                                                                        Todos los productos
+                                                                    </Link>
+                                                                </NavigationMenuLink>
+
+                                                                {
+                                                                    productsLenght.calzado != 0 ?
+                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                                            <Link to="/products/calzado" className="flex-row items-center gap-2">
+                                                                                <FontAwesomeIcon className="text-white" icon={faShoePrints} />
+                                                                                Calzado
+                                                                            </Link>
+                                                                        </NavigationMenuLink>
+                                                                        :
+                                                                        <></>
+                                                                }
+                                                                {
+                                                                    productsLenght.camisas != 0 ?
+                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                                            <Link to="/products/camisas" className="flex-row items-center gap-2">
+                                                                                <FontAwesomeIcon className="text-white" icon={faTShirt} />
+                                                                                Camisas
+                                                                            </Link>
+                                                                        </NavigationMenuLink>
+                                                                        :
+                                                                        <></>
+                                                                }
+                                                                {
+                                                                    productsLenght.pantalones != 0 ?
+                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                                            <Link to="/products/pantalones" className="flex-row items-center gap-2">
+                                                                                Pantalones
+                                                                            </Link>
+                                                                        </NavigationMenuLink>
+                                                                        :
+                                                                        <></>
+                                                                }
+                                                                {
+                                                                    productsLenght.gorras != 0 ?
+                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                                            <Link to="/products/gorras" className="flex-row items-center gap-2">
+                                                                                <FontAwesomeIcon className="text-white" icon={faHatCowboy} />
+                                                                                Gorras
+                                                                            </Link>
+                                                                        </NavigationMenuLink>
+                                                                        :
+                                                                        <></>
+                                                                }
+                                                                {
+                                                                    productsLenght.relojes != 0 ?
+                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                                            <Link to="/products/relojes" className="flex-row items-center gap-2">
+                                                                                <FontAwesomeIcon className="text-white" icon={faClock} />
+                                                                                Relojes
+                                                                            </Link>
+                                                                        </NavigationMenuLink>
+                                                                        :
+                                                                        <></>
+                                                                }
+                                                                {
+                                                                    productsLenght.gafas != 0 ?
+                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                                            <Link to="/products/gafas" className="flex-row items-center gap-2">
+                                                                                <FontAwesomeIcon className="text-white" icon={faGlasses} />
+                                                                                Gafas
+                                                                            </Link>
+                                                                        </NavigationMenuLink>
+                                                                        :
+                                                                        <></>
+                                                                }
+                                                                {
+                                                                    productsLenght.perfumes != 0 ?
+                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                                            <Link to="/products/perfumes" className="flex-row items-center gap-2">
+                                                                                <FontAwesomeIcon className="text-white" icon={faSprayCanSparkles} />
+                                                                                Perfumes
+                                                                            </Link>
+                                                                        </NavigationMenuLink>
+                                                                        :
+                                                                        <></>
+                                                                }
+                                                                {
+                                                                    productsLenght.vapers != 0 ?
+                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                                            <Link to="/products/vapers" className="flex-row items-center gap-2">
+                                                                                <FontAwesomeIcon className="text-white" icon={faJoint} />
+                                                                                Vapers
+                                                                            </Link>
+                                                                        </NavigationMenuLink>
+                                                                        :
+                                                                        <></>
+                                                                }
+                                                            </li>
+                                                        </ul>
+                                                    </NavigationMenuContent>
+                                                </NavigationMenuItem>
+                                            </NavigationMenuList>
+                                        </NavigationMenu>
+                                        :
+                                        <Link to="/products" className={`border-b-2 ${products ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white border-transparent"} px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300`}>
+                                            Productos
+                                        </Link>
+
+                                }
                             </div>
                         </div>
                         <div className="flex items-center">
@@ -104,10 +220,10 @@ export default function NavBar({ isLogin, openLogin, openRegister, active }) {
                                     </div>
                                     :
                                     <div className="ml-3 relative  hidden md:block ">
-                                        <button onClick={openLogin} className="text-gray-300 cursor-pointer mr-5 hover:text-white border-b-2 border-transparent hover:border-yellow-500 px-1 pt-1 inline-flex items-center text-sm font-medium transition-all duration-300m">
+                                        <button onClick={openLogin} className="text-gray-300 cursor-pointer mr-5 hover:text-white border-b-2 border-transparent hover:border-yellow-500 px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300m">
                                             Ingresar
                                         </button>
-                                        <button onClick={openRegister} className="text-gray-300 cursor-pointer hover:text-white border-b-2 border-transparent hover:border-yellow-500 px-1 pt-1 inline-flex items-center text-sm font-medium transition-all duration-300m">
+                                        <button onClick={openRegister} className="text-gray-300 cursor-pointer hover:text-white border-b-2 border-transparent hover:border-yellow-500 px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300m">
                                             Registrarse
                                         </button>
                                     </div>
@@ -162,7 +278,8 @@ export default function NavBar({ isLogin, openLogin, openRegister, active }) {
                             </div>
                     }
                 </div>
-            </nav>
+            </nav >
         </>
     )
 }
+
