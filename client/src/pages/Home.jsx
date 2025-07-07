@@ -27,6 +27,7 @@ export default function Home() {
     const { loading, startLoading, stopLoading } = usePageLoader();
     const [info, setInfo] = useState(false);
     const [products, setProducts] = useState([]);
+    const [productsLength, setProductsLength] = useState([]);
     const [isLogin, setIsLogin] = useState(null);
     const [error, setError] = useState(null);
 
@@ -34,14 +35,16 @@ export default function Home() {
         startLoading();
         try {
             const response = await getProducts();
+            console.log(response)
             setProducts(response.data.products);
             setIsLogin(response.data.user);
+            setProductsLength(response.data.productsLength);
         } catch (e) {
             if (e.status === 400) {
                 setInfo(true);
                 return;
             }
-            setError({ status: error.status, message: error?.response?.data?.message || "Error inesperado" });
+            setError({ status: e?.status || 500, message: e?.response?.data?.message || "Error inesperado" });
         } finally {
             stopLoading();
         }
@@ -59,7 +62,7 @@ export default function Home() {
     return (
         <>
             <Loader isVisible={loading} />
-            <NavBar openLogin={open} openRegister={openRegister} isLogin={isLogin} active={"Home"} />
+            <NavBar openLogin={open} openRegister={openRegister} isLogin={isLogin} active={"Home"} productsLenght={productsLength} />
             <HomeSection openLogin={open} isLogin={isLogin} />
             <Title text={"Lo último en la tendencia urbana"} />
             <Divider />

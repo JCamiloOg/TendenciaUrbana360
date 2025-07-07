@@ -24,6 +24,7 @@ export default function Products() {
     const { loading, startLoading, stopLoading } = usePageLoader();
 
     const [products, setProducts] = useState([]);
+    const [productsLength, setProductsLength] = useState([]);
     const [info, setInfo] = useState(false);
     const [error, setError] = useState(null);
     const [isLogin, setIsLogin] = useState(null);
@@ -34,8 +35,10 @@ export default function Products() {
             const response = await getAllProducts();
 
             if (response.status === 200) {
+                console.log(response);
                 setProducts(response.data.products)
                 setIsLogin(response.data.user);
+                setProductsLength(response.data.productsLength);
             }
         } catch (error) {
             if (error.status === 400) {
@@ -57,7 +60,7 @@ export default function Products() {
     return (
         <>
             <Loader isVisible={loading} />
-            <NavBar openLogin={open} openRegister={openRegister} isLogin={isLogin} active={"Products"} />
+            <NavBar openLogin={open} openRegister={openRegister} isLogin={isLogin} active={"Products"} productsLenght={productsLength} />
 
             <div className="container pt-24 mx-auto px-10">
                 <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 justify-center ">
