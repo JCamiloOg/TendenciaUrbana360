@@ -92,7 +92,7 @@ export async function getProducts(req, res) {
             vapeadores: 'Vapeador'
         }
 
-        if (!categoriasValidas.includes(categoria)) return res.json('404');
+        if (!categoriasValidas.includes(categoria)) return res.status(404).json({ message: "Pagina no encontrada." });
 
         if (categoria === 'perfumes') {
 
@@ -101,17 +101,14 @@ export async function getProducts(req, res) {
             if (perfumes.length <= 0) return res.status(404).json();
 
             return res.status(200).json({
-                head: 'Perfumes',
-                route: 'perfumes',
                 products: perfumes
             });
         }
-        let [products] = await getProductsCategory(categorias[categoria]);
+        let products = await getProductsCategory(categorias[categoria]);
 
-        if (products.length <= 0) return res.status(404).json();
+        if (products.length <= 0) return res.status(404).json({ message: "No se encontraron productos." });
 
         res.status(200).json({
-            head: categoria.charAt(0).toUpperCase() + categoria.slice(1).toLowerCase(),
             route: categoria,
             products: products
         });
