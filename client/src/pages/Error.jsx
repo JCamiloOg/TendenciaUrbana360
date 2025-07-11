@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import "../style/404.css";
+import { useEffect } from "react";
 
 export default function Error({ status, error }) {
+    useEffect(() => {
+        document.title = "Error"
+    })
     return (
         <div className="errorBody h-dvh w-dvh">
             <svg className="absolute top-2/4 left-2/4 mt-[-250px] ml-[-400px] " width="380px" height="500px" viewBox="0 0 837 1045" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="" s:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
