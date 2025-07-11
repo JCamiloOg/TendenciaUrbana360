@@ -71,7 +71,6 @@ export default function Profile() {
             const res = await getOrderByID(id);
 
             if (res.status === 200) {
-                console.log(res);
                 setIsOpen(true);
                 setDetailOrders(res.data);
                 setIdOrder(id);
@@ -95,10 +94,12 @@ export default function Profile() {
 
     useEffect(() => {
         if (!isOpen) {
-            setTimeout(() => {
+            const timeout = setTimeout(() => {
                 setDetailOrders([]);
                 setIdOrder(null);
             }, 1000);
+
+            return () => clearTimeout(timeout)
         }
     }, [isOpen]);
 
@@ -191,7 +192,7 @@ export default function Profile() {
                                     orders.length > 0 ?
                                         <TableDynamic columns={columns} title={`Listado de pedidos`} data={orders} viewMore={viewMore} />
                                         :
-                                        <h1 className="text-3xl font-bold text-center">No hay pedidos para mostrar</h1>
+                                        <h1 className="text-3xl font-bold text-center">No hay pedidos para mostrar.</h1>
                                 }
                             </div>
                         </AccordionContent>
@@ -230,19 +231,19 @@ export default function Profile() {
                                         </TableBody>
                                     </Table>
                                     :
-                                    <ul class="flex flex-col p-4">
+                                    <ul className="flex flex-col p-4">
                                         {
                                             detailOrders.map((pro, index) => (
-                                                <li class="border-gray-400 flex flex-row mb-2 text-left" key={index}>
-                                                    <div class="select-none cursor-pointer bg-gray-200 rounded-md flex flex-1 items-center p-4  transition duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
-                                                        <div class="flex flex-col rounded-md w-10 h-10 bg-gray-300 justify-center items-center mr-4"><img src={`${IMG_URL}${pro.Imagen}`} alt={pro.Nombre} /></div>
-                                                        <div class="flex-1 pl-1 mr-16">
-                                                            <div class="font-medium">{pro.Nombre}</div>
-                                                            <div class="text-gray-600 text-sm">Talla: {`${pro.Talla ? pro.Talla : "No aplica"}`}</div>
-                                                            <div class="text-gray-600 text-sm">Color: {`${pro.Color ? pro.Color : "No aplica"}`}</div>
-                                                            <div class="text-gray-600 text-sm">Cantidad: {pro.Cantidad}</div>
+                                                <li className="border-gray-400 flex flex-row mb-2 text-left" key={index}>
+                                                    <div className="select-none cursor-pointer bg-gray-200 rounded-md flex flex-1 items-center p-4  transition duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
+                                                        <div className="flex flex-col rounded-md w-10 h-10 bg-gray-300 justify-center items-center mr-4"><img src={`${IMG_URL}${pro.Imagen}`} alt={pro.Nombre} /></div>
+                                                        <div className="flex-1 pl-1 mr-16">
+                                                            <div className="font-medium">{pro.Nombre}</div>
+                                                            <div className="text-gray-600 text-sm">Talla: {`${pro.Talla ? pro.Talla : "No aplica"}`}</div>
+                                                            <div className="text-gray-600 text-sm">Color: {`${pro.Color ? pro.Color : "No aplica"}`}</div>
+                                                            <div className="text-gray-600 text-sm">Cantidad: {pro.Cantidad}</div>
                                                         </div>
-                                                        <div class="text-gray-600 text-xs">Total: {formatCurrency(pro.Total)}</div>
+                                                        <div className="text-gray-600 text-xs">Total: {formatCurrency(pro.Total)}</div>
                                                     </div>
                                                 </li>
                                             ))
