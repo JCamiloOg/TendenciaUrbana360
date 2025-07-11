@@ -1,6 +1,5 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import logo from "../../assets/TendenciaUrbanaLogoTransparente.svg"
-import { useClickOutSide } from '../../hooks/useClickOutSide';
 import { useForm } from 'react-hook-form';
 import { register as registerSubmit } from '../../services/users/usersServices';
 import { Toast } from '../../hooks/useToastAlert';
@@ -10,7 +9,6 @@ export default function ModalRegister({ isOpenModal, isVisible, close, openLogin
     const { register, handleSubmit, formState: { errors }, reset, watch } = useForm();
     const [disabled, setDisabled] = useState(null);
 
-    const menuRef = useRef(null);
 
     const password = watch("password");
 
@@ -40,7 +38,6 @@ export default function ModalRegister({ isOpenModal, isVisible, close, openLogin
     }
 
 
-    useClickOutSide(menuRef, close);
     return (
         <>
             {isOpenModal && (
@@ -50,7 +47,7 @@ export default function ModalRegister({ isOpenModal, isVisible, close, openLogin
                     className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"
                         } bg-black/40 backdrop-blur-sm`}
                 >
-                    <div ref={menuRef}
+                    <div
                         className={`relative p-4 w-full max-w-md transition-all duration-300 transform ${isVisible ? "scale-100" : "scale-90"
                             }`}
                     >
