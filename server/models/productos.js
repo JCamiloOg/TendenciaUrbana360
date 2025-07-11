@@ -47,7 +47,7 @@ export async function getDescription(id) {
 
 export async function getProductsCategory(table) {
     try {
-        const [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN perfumeria e ON p.`Id_producto` =  e.`Id_producto` WHERE Tipo_Producto = ? AND Estado = ? GROUP BY p.Id_producto ORDER BY p.`Id_producto` DESC LIMIT 100", [table, 'Activado']);
+        const [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN extras e ON p.`Id_producto` =  e.`Id_producto` WHERE Tipo_Producto = ? AND Estado = ? GROUP BY p.Id_producto ORDER BY p.`Id_producto` DESC", [table, 'Activado']);
 
         return rows;
     } catch (e) {
@@ -58,7 +58,7 @@ export async function getProductsCategory(table) {
 
 export async function getAllExtra() {
     try {
-        let [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN extras e ON p.`Id_producto` =  e.`Id_producto` WHERE Estado = ? GROUP BY p.Id_producto ORDER BY p.`Id_producto` DESC LIMIT 8", ['Activado']);
+        let [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN extras e ON p.`Id_producto` =  e.`Id_producto` WHERE Estado = ? GROUP BY p.Id_producto ORDER BY p.`Id_producto` DESC", ['Activado']);
 
         return rows;
     } catch (e) {
@@ -69,7 +69,7 @@ export async function getAllExtra() {
 
 export async function getPerfumeria() {
     try {
-        let [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN perfumeria e ON p.`Id_producto` =  e.`Id_producto` WHERE Estado = ? GROUP BY p.Id_producto ORDER BY p.`Id_producto` DESC LIMIT 2", ['Activado'])
+        let [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN perfumeria e ON p.`Id_producto` =  e.`Id_producto` WHERE Estado = ? GROUP BY p.Id_producto ORDER BY p.`Id_producto` DESC", ['Activado'])
 
         return rows;
     } catch (e) {
