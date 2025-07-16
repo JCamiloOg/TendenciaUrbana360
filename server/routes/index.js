@@ -6,9 +6,9 @@ import adminRouter from "./admin.js";
 import clientRouter from "./clients.js";
 import productsRouter from "./products.js";
 
-router.use("/", indexRouter);
-router.use("/products", productsRouter);
-router.use("/clientes", clientRouter);
-router.use("/admin", adminRouter);
+router.use("/api/", indexRouter);
+router.use("/api/products", productsRouter);
+router.use("/api/clientes", clientRouter);
+router.use("/api/admin", adminRouter);
 
 export default router;
