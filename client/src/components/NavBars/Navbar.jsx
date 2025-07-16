@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faBoxesStacked, faClock, faGlasses, faHatCowboy, faJoint, faShoePrints, faSprayCanSparkles, faTShirt, faUser } from "@fortawesome/free-solid-svg-icons"
+import { faBars, faBoxesStacked, faCartShopping, faClock, faGlasses, faHatCowboy, faJoint, faShoePrints, faSprayCanSparkles, faTShirt, faUser } from "@fortawesome/free-solid-svg-icons"
 
 // components 
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu"
@@ -15,6 +15,7 @@ import { Toast } from "../../hooks/useToastAlert"
 import { logOut } from "../../services/users/usersServices";
 // imgs
 import navbarImg from "../../assets/TR3Logo340px.svg";
+import Cart from "../Cart/Cart";
 
 export default function NavBar({ isLogin, openLogin, openRegister, active, productsLenght }) {
     const [home, setHome] = useState(false);
@@ -23,6 +24,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
 
     const { isOpen, toggle, close } = useMobileMenu();
     const { isOpenUser, toggleUser, closeUser } = useUserMenu();
+    const [isOpenCart, setIsOpenCart] = useState(false);
 
     const menuRefNav = useRef(null);
     const buttonRefNav = useRef(null);
@@ -59,6 +61,11 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
 
         }
     }
+
+    const handleCart = () => {
+        setIsOpenCart(!isOpenCart);
+    }
+
     useClickOutSide([menuRefNav, buttonRefNav], close);
     useClickOutSide([menuRefUser, buttonRefUser], closeUser);
     return (
@@ -170,7 +177,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                                                                 {
                                                                     productsLenght.vapers != 0 ?
                                                                         <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
-                                                                            <Link to="/products/vapers" className="flex-row items-center gap-2">
+                                                                            <Link to="/products/vapeadores" className="flex-row items-center gap-2">
                                                                                 <FontAwesomeIcon className="text-white" icon={faJoint} />
                                                                                 Vapers
                                                                             </Link>
@@ -206,11 +213,12 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                             {
                                 isLogin ?
                                     <div className="ml-3 relative hidden md:block">
-                                        <div>
+                                        <div className="flex gap-3">
                                             <button ref={buttonRefUser} type="button" className="bg-gray-800 p-3 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-yellow-500" id="user-menu-button" onClick={toggleUser} aria-expanded={isOpenUser ? "true" : "false"} aria-haspopup="true">
                                                 <span className="sr-only">Open user menu</span>
                                                 <FontAwesomeIcon icon={faUser} size="xl" />
                                             </button>
+                                            <button className="cursor-pointer" onClick={handleCart}><FontAwesomeIcon icon={faCartShopping} /></button>
                                         </div>
 
                                         <div ref={menuRefUser} className={`origin-top-right absolute  right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-blue-900 ring-1 ring-yellow-500 ring-opacity-5 focus:outline-none ${isOpenUser ? "max-h-[500px] opacity-100 " : "max-h-0 opacity-0 pointer-events-none"} transition-all duration-500 ease-in-out`} id="user-menu" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabIndex="-1">
@@ -267,6 +275,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                                     </div>
                                 </div>
                                 <div className="mt-3 px-2 space-y-1">
+                                    <button className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700" onClick={handleCart}>Carrito</button>
                                     <Link to={"/clients/profile"} className={`block px-3 py-2 rounded-md text-base font-medium ${profile ? "bg-yellow-500 text-black" : "text-gray-400 hover:text-white hover:bg-gray-700"}  `}>Tu perfil</Link>
                                     <a onClick={exit} role="button" className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">Cerrar sesión</a>
                                 </div>
@@ -278,7 +287,8 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                             </div>
                     }
                 </div>
-            </nav >
+            </nav>
+            <Cart isOpen={isOpenCart} updateVal={setIsOpenCart} />
         </>
     )
 }
