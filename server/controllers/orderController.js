@@ -31,14 +31,15 @@ export async function getOrder(req, res) {
             let id = cart[producto].id;
             let idmodel = cart[producto].modelo;
             let cantidad = cart[producto].cantidad;
+            let talla = cart[producto].talla;
             let result;
 
             let product = await getProduct(id);
 
             if (product[0].Tipo_Producto === 'Perfume') {
-                result = await getExtraInfo("perfumeria", id, idmodel)
+                result = await getExtraInfo("perfumeria", id, idmodel, undefined)
             } else {
-                result = await getExtraInfo(null, id, idmodel);
+                result = await getExtraInfo(null, id, idmodel, talla);
             }
 
             let price = result[0].PrecioTipo ? result[0].PrecioTipo : result[0].Precio;
@@ -48,7 +49,7 @@ export async function getOrder(req, res) {
 
             let routeImage = routesImages[result[0].Tipo_Producto]
 
-            newCart.push({ ...result[0], Route: routeImage, Total: result[0].PrecioTipo ? result[0].PrecioTipo * cantidad : result[0].Precio * cantidad });
+            newCart.push({ ...result[0], Route: routeImage, Total: result[0].PrecioTipo ? result[0].PrecioTipo * cantidad : result[0].Precio * cantidad, Cantidad: cantidad });
         }
         const adress = await getUserAdress(user.id);
 
@@ -131,6 +132,7 @@ export async function updateAdress(req, res) {
 
         if (!user) return res.redirect('/');
 
+
         const query = await updateUserAdress(req.body, user.id);
         return res.status(200).json({ message: query.message });
     } catch (e) {
@@ -196,7 +198,7 @@ export async function saveOrder(req, res) {
             let model;
             let price;
 
-            let [product] = getProduct(id);
+            let product = await getProduct(id);
 
             if (product[0].Tipo_Producto === "Perfume") {
                 model = await getModel("perfumeria", idmodel);
@@ -208,7 +210,7 @@ export async function saveOrder(req, res) {
 
 
             if (idTalla) {
-                let [talla] = await getTallas(idTalla);
+                let talla = await getTallas(idTalla);
                 if (talla.length <= 0) return res.status(404).json({ message: "Talla en el carrito invalido." });
             }
 
