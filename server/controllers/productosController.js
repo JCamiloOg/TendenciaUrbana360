@@ -104,12 +104,12 @@ export async function getProducts(req, res) {
                 products: perfumes
             });
         }
+
         let products = await getProductsCategory(categorias[categoria]);
 
         if (products.length <= 0) return res.status(404).json({ message: "No se encontraron productos." });
 
         res.status(200).json({
-            route: categoria,
             products: products
         });
     } catch (e) {
