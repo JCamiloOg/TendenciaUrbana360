@@ -3,7 +3,7 @@ import navbarImg from "../../assets/TR3Logo340px.svg";
 
 export default function NavbarEmpty() {
     return (
-        <nav className="bg-[#004aad] text-white shadow-lg fixed top-0 w-full">
+        <nav className="bg-[#004aad] text-white shadow-lg fixed z-49 top-0 w-full">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
