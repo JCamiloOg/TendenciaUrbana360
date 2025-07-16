@@ -12,3 +12,5 @@ export const Toast = MySwal.mixin({
     timer: 3000,
     timerProgressBar: true,
 });
+
+export const SwalAlert = MySwal
