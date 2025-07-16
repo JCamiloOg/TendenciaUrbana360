@@ -62,7 +62,7 @@ export default function Profile() {
             }
             setError({ status: error?.status || 500, message: error?.response?.data?.message || "Error inesperado" });
         } finally {
-            stopLoading();
+            setTimeout(() => stopLoading(), 500);
         }
     }
 

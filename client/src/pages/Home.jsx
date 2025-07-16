@@ -20,6 +20,7 @@ import { getProducts } from "../services/productsService.js";
 //Hooks
 import { useModalLogin, useModalRegister } from "../hooks/useModal.js";
 import { usePageLoader } from "../hooks/useLoader.js";
+import Cart from "@/components/Cart/Cart.jsx";
 
 export default function Home() {
     const { isOpenModal, isVisible, close, open } = useModalLogin();
@@ -35,7 +36,6 @@ export default function Home() {
         startLoading();
         try {
             const response = await getProducts();
-            console.log(response)
             setProducts(response.data.products);
             setIsLogin(response.data.user);
             setProductsLength(response.data.productsLength);

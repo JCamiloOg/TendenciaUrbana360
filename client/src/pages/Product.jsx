@@ -1,34 +1,35 @@
 // Modules
-import { useParams } from "react-router-dom"
+import { useParams, useSearchParams } from "react-router-dom"
 import { useEffect, useState, useCallback } from "react";
 import useEmblaCarousel from 'embla-carousel-react'
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 // components
 import Error from "./Error";
 import Loader from "@/components/Loader";
 import NavBar from "@/components/NavBars/Navbar";
 import NoInfoComplete from "./NoInfoComplete";
-import { Card, CardContent } from "@/components/ui/card"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import ModalLogin from "@/components/Modals/ModalLogin";
 import ModalRegister from "@/components/Modals/ModalRegister";
 import formatCurrency from "@/utils/formatCurrency";
-import Select from "@/components/Inputs/Select";
 import ButtonBlank from "@/components/Buttons/ButtonBlank";
 import Footer from "@/components/Footer";
 import sizesGuide from "../assets/guiasTallas.jpg"
+import ModalImage from "@/components/Modals/ModalImage";
+import SelectWithImages from "@/components/Inputs/SelectWithImage";
+import SelectRounded from "@/components/Inputs/SelectRounded";
 
 // Hooks
 import { useModalLogin, useModalRegister } from "@/hooks/useModal";
 import { usePageLoader } from "@/hooks/useLoader";
 import getExtension from "@/utils/getExtension";
+import useCart from "../hooks/useCart.js";
 
 // Services
 import { getProductByID } from "@/services/productsService";
 import { IMG_URL } from "@/config";
-import ModalImage from "@/components/Modals/ModalImage";
-import SelectWithImages from "@/components/Inputs/SelectWithImage";
-import SelectRounded from "@/components/Inputs/SelectRounded";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { usePrevNextButtons } from "@/hooks/usePrevNextButtons";
 
 export default function Product() {
     const { type, id } = useParams();
@@ -36,7 +37,9 @@ export default function Product() {
 
     const { isOpenModal, isVisible, close, open } = useModalLogin();
     const { isOpenModalRegister, isVisibleReigster, openRegister, closeRegister } = useModalRegister();
+    const { handleAddCart } = useCart();
     const { loading, startLoading, stopLoading } = usePageLoader();
+    const { nextBtnDisabled, prevBtnDisabled, onNextButtonClick, onPrevButtonClick } = usePrevNextButtons(emblaApi)
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const [product, setProduct] = useState([]);
@@ -50,9 +53,8 @@ export default function Product() {
     const [isOpenModalImage, setIsOpenModalImage] = useState(false);
     const [imageModal, setImageModal] = useState("");
 
-    const [productSelected, setProductSelected] = useState(false);
-    const [sizesSelected, setSizesSelected] = useState(false);
-    const [typeSelected, setTypeSelected] = useState(false);
+    const [productSelected, setProductSelected] = useState(null);
+    const [sizesSelected, setSizesSelected] = useState(null);
 
 
     const getProduct = async (type, id) => {
@@ -73,20 +75,25 @@ export default function Product() {
             }
             setError({ status: e?.status || 500, message: e?.response?.data?.message || "Error inesperado" })
         } finally {
-            stopLoading();
+            setTimeout(() => stopLoading(), 500);
         }
     }
+
+    useEffect(() => {
+        document.title = "Cargando..."
+        getProduct(type, id);
+    }, [type, id])
 
 
     const handleType = (val) => {
         const prices = JSON.parse(localStorage.getItem("types"));
         setPrice(prices[val] ? prices[val] : product.Precio);
-        if (val === typeSelected) setTypeSelected(false);
-        else setTypeSelected(val);
+        if (val === productSelected) setProductSelected(null);
+        else setProductSelected(val);
     }
 
     const handleSizes = (val) => {
-        if (val === sizesSelected) setSizesSelected(false);
+        if (val === sizesSelected) setSizesSelected(null);
         else setSizesSelected(val);
     }
 
@@ -107,7 +114,7 @@ export default function Product() {
                 setSelectedIndex(emblaApi.selectedScrollSnap())
             })
         }
-    }, [emblaApi])
+    }, [emblaApi]);
 
     useEffect(() => {
         getProduct(type, id);
@@ -126,6 +133,7 @@ export default function Product() {
         }
 
     }, [product, extra])
+
 
     if (error) return <Error status={error.status} error={error.message} />
     if (info) return <NoInfoComplete />
@@ -152,8 +160,10 @@ export default function Product() {
                                         </div>
                                     ))
                                 }
-                                {/* <CarouselPrevious className={`cursor-pointer`} />
-                            <CarouselNext className={`cursor-pointer`} /> */}
+                            </div>
+                            <div className="flex gap-2 justify-center mt-4">
+                                <button className={`w-15 h-15 border-2 rounded-full ${prevBtnDisabled ? "border-gray-200 text-gray-600" : "border-black cursor-pointer"}`} onClick={onPrevButtonClick}><FontAwesomeIcon icon={faChevronLeft} size="xl" /></button>
+                                <button className={`border-2 w-15 h-15 rounded-full ${nextBtnDisabled ? "border-gray-200 text-gray-600" : "border-black cursor-pointer"} `} onClick={onNextButtonClick}><FontAwesomeIcon icon={faChevronRight} size="xl" /></button>
                             </div>
                         </div>
                     </div>
@@ -195,7 +205,7 @@ export default function Product() {
                         }
                         {
                             type === "perfumes" ?
-                                <SelectRounded options={extra} labelKey="Tipo" valueKey="ID" onSelect={handleType} selected={typeSelected} />
+                                <SelectRounded options={extra} labelKey="Tipo" valueKey="ID" onSelect={handleType} selected={productSelected} />
                                 :
                                 <></>
                         }
@@ -209,7 +219,7 @@ export default function Product() {
                         <ButtonBlank color={"#00af4c"} letterColor={"black"} >Comprar por Whastapp</ButtonBlank>
 
                         <hr className="border my-7" />
-                        <ButtonBlank onClick={() => isLogin ? "" : open()} color={"#ecc500"} letterColor={"black"} >Añadir al carrito</ButtonBlank>
+                        <ButtonBlank onClick={() => isLogin ? handleAddCart(productSelected, sizesSelected, id, type) : open()} color={"#ecc500"} letterColor={"black"} >Añadir al carrito</ButtonBlank>
                     </div>
                 </div>
             </div>

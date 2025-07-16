@@ -16,22 +16,22 @@ export default function NoInfoComplete() {
     const onSubmit = async (data) => {
         try {
             setDisabled(true);
-            const response = completeInfo(data);
+            const response = await completeInfo(data);
             if (response.status === 200) {
                 Toast.fire({
                     icon: "success",
                     text: response.data.message,
                     timer: 3000,
-                })
+                }).then(() => window.location.reload());
             }
-            setTimeout(() => window.location.reload(), 2999);
         } catch (error) {
             Toast.fire({
                 icon: "error",
                 text: error.response?.data?.message || "Error inesperado",
                 timer: 3000
             })
-
+        } finally {
+            setTimeout(() => setDisabled(false), 3000);
         }
     }
 

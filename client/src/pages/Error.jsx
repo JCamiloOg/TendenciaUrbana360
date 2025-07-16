@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../style/404.css";
 import { useEffect } from "react";
 
 export default function Error({ status, error }) {
+    const navigate = useNavigate();
     useEffect(() => {
         document.title = "Error"
     })
@@ -22,7 +23,7 @@ export default function Error({ status, error }) {
                 <p>{error}</p>
                 <div className="">
                     <div className="mt-10">
-                        <a onClick={() => history.back(-1)} className="bg-[#004aad] pb-2 pt-2 px-[25px]  rounded-[4px] text-white font-bold text-[14px] transition-all duration-300 ease-linear cursor-pointer no-underline mr-2.5 hover:bg-[#ffd200] hover:text-black  link-button link-back-button">Volver</a>
+                        <a onClick={() => navigate(-1)} className="bg-[#004aad] pb-2 pt-2 px-[25px]  rounded-[4px] text-white font-bold text-[14px] transition-all duration-300 ease-linear cursor-pointer no-underline mr-2.5 hover:bg-[#ffd200] hover:text-black  link-button link-back-button">Volver</a>
                         <Link to="/" className="bg-[#004aad] pb-2 px-[25px] pt-2 rounded-[4px] text-white font-bold text-[14px] transition-all duration-300 ease-linear cursor-pointer no-underline mr-2.5 hover:bg-[#ffd200] hover:text-black">Ir a inicio</Link>
                     </div>
                 </div>
