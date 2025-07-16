@@ -47,7 +47,7 @@ export async function getDescription(id) {
 
 export async function getProductsCategory(table) {
     try {
-        const [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN extras e ON p.`Id_producto` =  e.`Id_producto` WHERE Tipo_Producto = ? AND Estado = ? GROUP BY p.Id_producto ORDER BY p.`Id_producto` DESC", [table, 'Activado']);
+        const [rows] = await conn.query(`SELECT p.*, e.Imagen FROM productos p INNER JOIN ${table === "Perfume" ? "perfumeria" : "extras"} e ON p.Id_producto =  e.Id_producto WHERE Tipo_Producto = ? AND Estado = ? GROUP BY p.Id_producto ORDER BY p.Id_producto DESC`, [table, 'Activado']);
 
         return rows;
     } catch (e) {
