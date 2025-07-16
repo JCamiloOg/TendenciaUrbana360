@@ -2,7 +2,7 @@ import { getAllInfoProduct, getPrice, getProduct } from "../models/cart.js";
 
 export async function getCart(req, res) {
     try {
-        const routesImages = { Reloj: 'relojes', Calzado: 'calzado', Camisa: 'camisas', Gafas: 'gafas', Gorra: 'gorras', Pantalon: 'pantalones', Vapeador: 'vapeadores', Perfume: 'perfumes' };
+        const types = { Reloj: 'relojes', Calzado: 'calzado', Camisa: 'camisas', Gafas: 'gafas', Gorra: 'gorras', Pantalon: 'pantalones', Vapeador: 'vapeadores', Perfume: 'perfumes' };
         let cartLocal = req.session.cart;
 
         let cart = [];
@@ -22,10 +22,9 @@ export async function getCart(req, res) {
                 if (producto[0].Tipo_Producto === 'Perfume') {
                     var result = await getAllInfoProduct(talla, id, idModel, "Perfume")
                 }
+                let type = types[result[0].Tipo_Producto];
 
-                let routeImage = routesImages[result[0].Tipo_Producto];
-
-                cart.push({ ...result[0], Cantidad: cantidad, Route: routeImage });
+                cart.push({ ...result[0], Cantidad: cantidad, Type: type });
             }
         } else {
             cart = undefined;
@@ -34,7 +33,7 @@ export async function getCart(req, res) {
         if (typeof cart !== 'undefined' && Object.keys(cart).length <= 0) cart = undefined;
 
 
-        res.satus(200).json({ route: 'Carrito', head: 'Carrito de compras', cart: cart });
+        res.status(200).json({ cart: cart });
     } catch (e) {
         console.log(e);
         res.status(500).json({ message: "Error al obtener el carrito" })
@@ -77,9 +76,9 @@ export async function updateTotalAmount(req, res) {
                 let producto = await getProduct(id);
 
                 if (producto[0].Tipo_Producto === 'Perfume') {
-                    [price] = await conn.query("SELECT p.Precio, e.Precio AS PrecioTipo FROM productos p INNER JOIN perfumeria e ON p.Id_producto = e.Id_Producto WHERE e.ID = ?", [idModel]);
+                    price = await getPrice("perfumeria", idModel);
                 } else {
-                    [price] = await conn.query("SELECT Precio FROM productos WHERE Id_producto = ?", [id]);
+                    price = await getPrice(null, id);
                 }
 
                 let cantidad = cart[product].cantidad;
