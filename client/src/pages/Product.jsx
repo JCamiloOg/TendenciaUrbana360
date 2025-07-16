@@ -1,5 +1,5 @@
 // Modules
-import { useParams, useSearchParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { useEffect, useState, useCallback } from "react";
 import useEmblaCarousel from 'embla-carousel-react'
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
