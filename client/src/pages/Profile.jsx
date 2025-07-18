@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
-import { faUser, faLocationDot, faLock, faBoxesPacking, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLocationDot, faLock, faBoxesPacking, faChevronDown, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import Footer from "../components/Footer";
 import Loader from "../components/Loader";
 import NavBar from "../components/NavBars/Navbar";
@@ -25,6 +25,13 @@ import { getOrderByID } from "@/services/users/ordersServices";
 import { IMG_URL } from "@/config";
 import formatCurrency from "@/utils/formatCurrency";
 import useIsMobile from "@/hooks/useIsMobile";
+import { checkAuth } from "@/services/users/updateInfoServices";
+import ButtonBlank from "@/components/Buttons/ButtonBlank";
+import ModalImage from "@/components/Modals/ModalImage";
+import InputField from "@/components/Inputs/Input";
+import CopyButton from "@/components/Buttons/CopyButton";
+import DatePicker from "@/components/Inputs/DatePicker";
+import { formatDate } from "@/utils/formatDate";
 
 export default function Profile() {
     const [isOpen, setIsOpen] = useState(false);
@@ -36,10 +43,14 @@ export default function Profile() {
     const [idOrder, setIdOrder] = useState(null);
     const [isLogin, setIsLogin] = useState(null);
     const [error, setError] = useState(null);
+    const [disabled, setDisabled] = useState(false);
+    const [searchOrder, setSearchOrder] = useState([])
 
     const isMobile = useIsMobile();
     const navigate = useNavigate();
     const columns = useDynamicColumns(orders);
+    const [image, setImage] = useState("");
+    const [isOpenModalImage, setIsOpenModalImage] = useState(false);
 
     const { loading, startLoading, stopLoading } = usePageLoader();
 
@@ -52,6 +63,7 @@ export default function Profile() {
                 setOrders(res.data.orders);
                 setLetters(res.data.initialLetters);
                 setIsLogin(res.data.user);
+                setSearchOrder(res.data.orders);
             }
         } catch (error) {
             if (error.status === 400) {
@@ -103,6 +115,46 @@ export default function Profile() {
         }
     }, [isOpen]);
 
+    const handleModify = async (redirect) => {
+        setDisabled(true);
+        try {
+            const res = await checkAuth(redirect);
+            if (res.status === 200) {
+                navigate(res.data.redirect);
+            }
+        } catch (e) {
+            console.log(e);
+            Toast.fire({
+                icon: "error",
+                title: "Error inesperado",
+                timer: 3000
+            })
+        } finally {
+            setTimeout(() => setDisabled(false), 500);
+        }
+    }
+
+    const handleModalImage = (img) => {
+        setIsOpenModalImage(!isOpenModalImage);
+        setImage(img);
+    }
+
+    const onSearchOrder = (value) => {
+        if (!value) return setSearchOrder(orders);
+        const date = formatDate(value);
+
+
+        const filter = orders.filter((order) => order.Fecha.includes(date));
+        if (filter.length == 0) {
+            return Toast.fire({
+                title: `No se han encontrado pedidos con la fecha ${date}`,
+                icon: "error",
+                timer: 3000
+            })
+        }
+        setSearchOrder(filter);
+    }
+
     if (error) return <Error status={error.status} error={error.message} />
     if (info) return <NoInfoComplete />
 
@@ -112,13 +164,18 @@ export default function Profile() {
             <Loader isVisible={loading} />
             <NavBar isLogin={isLogin} active={"Profile"} />
 
-            <div className={`container mx-auto px-10 pt-28`}>
+            <div className={`container mx-auto ${!isMobile ? "px-10" : "px-1"} pt-28`}>
                 <div className="p-3 border border-gray-300 rounded-sm bg-white  shadow-2xs mb-12">
+                    {
+
+                    }
                     <div className="flex flex-wrap gap-4" >
-                        <div className=" ml-2.5 text-[28px] border-1 border-solid rounded-full flex items-center justify-center max-h-[80px] max-w-[80px] min-h-[80px] min-w-[80px]">{letters}</div>
+                        <div className="ml-2.5 2xl:flex xl:flex lg:flex md:flex sm:flex hidden text-[28px] border-1 border-solid rounded-full  items-center justify-center max-h-[80px] max-w-[80px] min-h-[80px] min-w-[80px]">{letters}</div>
                         <div className="flex flex-col">
-                            <h2 className="mt-2 text-3xl font-semibold">{`${infoUser.Nombre} ${infoUser.Apellido}`}</h2>
-                            <p>{infoUser.Correo}</p>
+                            <h2 className="mt-2 text-2xl font-semibold 2xl:text-3xl xl:text-3xl lg:text-3xl md:text-3xl sm:text-3xl break-words whitespace-normal">
+                                {`${infoUser.Nombre} ${infoUser.Apellido}`}
+                            </h2>
+                            <p className="break-words whitespace-normal">{infoUser.Correo}</p>
                         </div>
                     </div>
                 </div>
@@ -134,15 +191,20 @@ export default function Profile() {
                             <FontAwesomeIcon icon={faChevronDown} size="lg" className="transition-all duration-300" />
                         </AccordionTrigger>
                         <AccordionContent className={`bg-transparent p-7`}>
-                            <div className="w-full p-7 bg-white rounded-sm border border-gray-300 mb-12">
-                                <h2 className="text-lg font-bold mb-2">Correo Electrónico</h2>
-                                <p className="text-gray-400 text-lg mb-5">{infoUser.Correo}</p>
-                                <button className="btn-blank" style={{ "--color": "#007bff", "--letterColor": "black" }}>Modificar</button>
-                            </div>
+                            {
+                                infoUser.Password !== null ?
+                                    <div className="w-full p-7 bg-white rounded-sm border border-gray-300 mb-12">
+                                        <h2 className="text-lg font-bold mb-2">Correo Electrónico</h2>
+                                        <p className="text-gray-400 text-lg mb-5 break-words ">{infoUser.Correo}</p>
+                                        <ButtonBlank className="rounded-md 2xl:w-sm xl:w-sm lg:w-sm md:w-xs sm:w-xs w-full" onClick={() => handleModify("email")} color={"#007bff"} disabled={disabled}>Modificar</ButtonBlank>
+                                    </div>
+                                    :
+                                    <></>
+                            }
                             <div className="w-full p-7 bg-white rounded-sm border border-gray-300">
                                 <h2 className="text-lg font-bold mb-2">Teléfono</h2>
                                 <p className="text-gray-400 text-lg mb-5">{infoUser.Telefono}</p>
-                                <button className="btn-blank" style={{ "--color": "#007bff", "--letterColor": "black" }}>Modificar</button>
+                                <ButtonBlank className="rounded-md 2xl:w-sm xl:w-sm lg:w-sm md:w-xs sm:w-xs w-full" onClick={() => handleModify("phone")} color={"#007bff"} disabled={disabled}>Modificar</ButtonBlank>
                             </div>
                         </AccordionContent>
                     </AccordionItem>
@@ -158,26 +220,31 @@ export default function Profile() {
                             <div className="w-full p-7 bg-white rounded-sm border border-gray-300">
                                 <h2 className="text-lg font-bold mb-2">Dirección</h2>
                                 <p className="text-gray-400 text-lg mb-5">{infoUser.Direccion}</p>
-                                <button className="btn-blank" style={{ "--color": "#007bff", "--letterColor": "black" }}>Modificar</button>
+                                <ButtonBlank className="rounded-md 2xl:w-sm xl:w-sm lg:w-sm md:w-xs sm:w-xs w-full" onClick={() => handleModify("address")} color={"#007bff"} disabled={disabled}>Modificar</ButtonBlank>
                             </div>
                         </AccordionContent>
                     </AccordionItem>
-                    <AccordionItem value="passwordInfo" className={`mb-12`}>
-                        <AccordionTrigger className={`hover:no-underline p-7 [&>svg]:hidden bg-white border border-gray-300  cursor-pointer`}>
-                            <div className="flex items-center gap-2">
-                                <FontAwesomeIcon icon={faLock} size="lg" />
-                                <span className="text-left font-semibold">Contraseña</span>
-                            </div>
-                            <FontAwesomeIcon icon={faChevronDown} size="lg" className="transition-all duration-300" />
-                        </AccordionTrigger>
-                        <AccordionContent className={`bg-transparent p-7`}>
-                            <div className="w-full p-7 bg-white rounded-sm border border-gray-300">
-                                <h2 className="text-lg font-bold mb-2">Contraseña</h2>
-                                <p className="text-gray-400 text-lg mb-5">{"*".repeat(Math.floor(Math.random() * 20) + 8)}</p>
-                                <button className="btn-blank" style={{ "--color": "#007bff", "--letterColor": "black" }}>Modificar</button>
-                            </div>
-                        </AccordionContent>
-                    </AccordionItem>
+                    {
+                        infoUser.Password !== null ?
+                            <AccordionItem value="passwordInfo" className={`mb-12`}>
+                                <AccordionTrigger className={`hover:no-underline p-7 [&>svg]:hidden bg-white border border-gray-300  cursor-pointer`}>
+                                    <div className="flex items-center gap-2">
+                                        <FontAwesomeIcon icon={faLock} size="lg" />
+                                        <span className="text-left font-semibold">Contraseña</span>
+                                    </div>
+                                    <FontAwesomeIcon icon={faChevronDown} size="lg" className="transition-all duration-300" />
+                                </AccordionTrigger>
+                                <AccordionContent className={`bg-transparent p-7`}>
+                                    <div className="w-full p-7 bg-white rounded-sm border border-gray-300">
+                                        <h2 className="text-lg font-bold mb-2">Contraseña</h2>
+                                        <p className="text-gray-400 text-lg mb-5">{"*".repeat(Math.floor(Math.random() * 20) + 8)}</p>
+                                        <ButtonBlank className="rounded-md 2xl:w-sm xl:w-sm lg:w-sm md:w-xs sm:w-xs w-full" onClick={() => handleModify("password")} color={"#007bff"} disabled={disabled}>Modificar</ButtonBlank>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                            :
+                            <></>
+                    }
                     <AccordionItem value="ordersInfo" className={`mb-12`}>
                         <AccordionTrigger className={`hover:no-underline p-7 [&>svg]:hidden bg-white border border-gray-300 cursor-pointer `}>
                             <div className="flex items-center gap-2">
@@ -189,8 +256,40 @@ export default function Profile() {
                         <AccordionContent className={`bg-transparent p-7`}>
                             <div className="w-full p-7 bg-white rounded-sm border border-gray-300">
                                 {
-                                    orders.length > 0 ?
-                                        <TableDynamic columns={columns} title={`Listado de pedidos`} data={orders} viewMore={viewMore} />
+                                    searchOrder.length > 0 ?
+                                        !isMobile ?
+                                            <>
+                                                <DatePicker label={"Buscar pedido por fecha"} onChange={onSearchOrder} text={"Seleccione una fecha"} />
+                                                <TableDynamic columns={columns} title={`Listado de pedidos`} data={searchOrder} viewMore={viewMore} />
+                                            </>
+                                            :
+                                            <>
+                                                <DatePicker label={"Buscar pedido por fecha"} onChange={onSearchOrder} text={"Seleccione una fecha"} />
+                                                <p className="text-gray-500">Dale click a cualquier pedido para ver más información.</p>
+                                                <table class="w-full ">
+                                                    <tbody class="w-40 ">
+                                                        {
+                                                            searchOrder.map((order, index) => (
+                                                                <tr class={`transform scale-100 text-xs py-1 border-b-2 border-black ${order.Estado == "Completado" ? "bg-green-500/30" : ""} ${order.Estado == "Pendiente" ? "bg-yellow-500/30" : ""} ${order.Estado == "Cancelado" ? "bg-red-500/30" : ""} ${order.Estado == "En Proceso" ? "bg-blue-500/30" : ""} cursor-pointer`} onClick={() => viewMore(order.PedidoID)} key={index}>
+                                                                    <td class="pl-5 pr-3 whitespace-no-wrap">
+                                                                        <div class="text-black text-xl">Fecha</div>
+                                                                        <div className="text-lg">{order.Fecha}</div>
+                                                                    </td>
+
+                                                                    <td class="px-2 py-2 whitespace-no-wrap">
+                                                                        <div class="leading-5 text-black mb-4 font-medium text-xl">Información</div>
+                                                                        <div class="leading-5 w-40 text-gray-900 text-lg"> # Pedido: <span className="text-sm truncate overflow-hidden whitespace-nowrap block">{order.PedidoID}</span>
+                                                                        </div>
+                                                                        <div class="leading-5 text-gray-800 text-lg mb-2">Estado: {order.Estado}</div>
+                                                                        <div class="leading-5 text-gray-800 text-lg">Total: {formatCurrency(order.Total)}</div>
+                                                                    </td>
+
+                                                                </tr>
+                                                            ))
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </>
                                         :
                                         <h1 className="text-3xl font-bold text-center">No hay pedidos para mostrar.</h1>
                                 }
@@ -200,11 +299,12 @@ export default function Profile() {
                 </Accordion>
             </div>
             <Footer />
+            <ModalImage image={image} isOpen={isOpenModalImage} updateVal={setIsOpenModalImage} />
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogContent className={`max-w-5/6 sm:max-w-[530px] md:max-w-[650px] lg:max-w-[900px] xl:max-w-[1150px] 2xl:max-w-[1400px]`}>
                     <DialogHeader>
                         <DialogTitle className={`text-left`}>Detalles del pedido</DialogTitle>
-                        <DialogDescription className={`text-left ${isMobile ? "break-words whitespace-normal w-100" : ""}`}>{idOrder}</DialogDescription>
+                        <DialogDescription className={`text-left ${isMobile ? "break-words whitespace-normal w-70" : ""}`}>{idOrder}</DialogDescription>
                         <div className="">
                             {
                                 !isMobile ?
@@ -231,14 +331,14 @@ export default function Profile() {
                                         </TableBody>
                                     </Table>
                                     :
-                                    <ul className="flex flex-col p-4">
+                                    <ul className="flex flex-col w-full">
                                         {
                                             detailOrders.map((pro, index) => (
-                                                <li className="border-gray-400 flex flex-row mb-2 text-left" key={index}>
+                                                <li className="border-gray-400 flex flex-row mb-2 text-left" onClick={() => handleModalImage(IMG_URL + pro.Imagen)} key={index}>
                                                     <div className="select-none cursor-pointer bg-gray-200 rounded-md flex flex-1 items-center p-4  transition duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
-                                                        <div className="flex flex-col rounded-md w-10 h-10 bg-gray-300 justify-center items-center mr-4"><img src={`${IMG_URL}${pro.Imagen}`} alt={pro.Nombre} /></div>
+                                                        {/* <div className="flex flex-col rounded-md w-10 h-10 bg-gray-300 justify-center items-center mr-4"><img src={`${IMG_URL}${pro.Imagen}`} alt={pro.Nombre} /></div> */}
                                                         <div className="flex-1 pl-1 mr-16">
-                                                            <div className="font-medium">{pro.Nombre}</div>
+                                                            <div className="font-medium decoration-0 underline" >{pro.Nombre}</div>
                                                             <div className="text-gray-600 text-sm">Talla: {`${pro.Talla ? pro.Talla : "No aplica"}`}</div>
                                                             <div className="text-gray-600 text-sm">Color: {`${pro.Color ? pro.Color : "No aplica"}`}</div>
                                                             <div className="text-gray-600 text-sm">Cantidad: {pro.Cantidad}</div>

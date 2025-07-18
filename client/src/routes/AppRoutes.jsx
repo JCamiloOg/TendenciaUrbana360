@@ -8,6 +8,7 @@ import Profile from "../pages/Profile";
 import Product from "@/pages/Product";
 import ProductsByCategory from "@/pages/ProductsByCategory";
 import Order from "@/pages/Order";
+import Modify from "@/pages/Modify";
 
 export default function AppRoutes() {
     return (
@@ -16,6 +17,7 @@ export default function AppRoutes() {
             <Route path="/products" element={<Products />} />
             <Route path="/clients/profile" element={<Profile />} />
             <Route path="/clients/order/:step" element={<Order />} />
+            <Route path="/clients/profile/modify" element={<Modify />} />
             <Route path="/login/success" element={<AuthUser />} />
             <Route path="/products/:type" element={<ProductsByCategory />} />
             <Route path="/products/:type/:id" element={<Product />} />
