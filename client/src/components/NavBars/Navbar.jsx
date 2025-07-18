@@ -218,7 +218,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                                                 <span className="sr-only">Open user menu</span>
                                                 <FontAwesomeIcon icon={faUser} size="xl" />
                                             </button>
-                                            <button className="cursor-pointer" onClick={handleCart}><FontAwesomeIcon icon={faCartShopping} /></button>
+                                            <button className="cursor-pointer text-gray-300 hover:border-yellow-500 hover:text-white border-transparent transition-all duration-300 border-b-2" onClick={handleCart}><FontAwesomeIcon icon={faCartShopping} /></button>
                                         </div>
 
                                         <div ref={menuRefUser} className={`origin-top-right absolute  right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-blue-900 ring-1 ring-yellow-500 ring-opacity-5 focus:outline-none ${isOpenUser ? "max-h-[500px] opacity-100 " : "max-h-0 opacity-0 pointer-events-none"} transition-all duration-500 ease-in-out`} id="user-menu" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabIndex="-1">
