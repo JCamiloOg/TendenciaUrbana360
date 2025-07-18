@@ -46,36 +46,65 @@ export default function NoInfoComplete() {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="mt-8 space-y-6">
                             <div className="mb-10">
-                                <InputField icon={faUser} isError={errors.nombre ? true : false} label={"Nombre"} type={"text"} {...register("nombre", {
-                                    required: true,
-                                    maxLength: 50,
-                                    minLength: 4
+                                <InputField icon={faUser} error={errors.nombre?.message} label={"Nombre"} type={"text"} {...register("nombre", {
+                                    required: "El nombres es requerido",
+                                    maxLength: {
+                                        value: 50,
+                                        message: "El nombre no puede superar los 50 caracteres"
+                                    },
+                                    minLength: {
+                                        value: 4,
+                                        message: "El nombre debe tener al menos 4 caracteres"
+                                    }
                                 })} />
                             </div>
                             <div className="mb-10">
-                                <InputField isError={errors.apellido ? true : false} icon={faUser} label={"Apellido"} type={"text"} {...register("apellido", {
-                                    required: true,
-                                    maxLength: 50,
-                                    minLength: 4
+                                <InputField error={errors.apellido?.message} icon={faUser} label={"Apellido"} type={"text"} {...register("apellido", {
+                                    required: "El apellido es requerido",
+                                    maxLength: {
+                                        value: 50,
+                                        message: "El apellido no puede superar los 50 caracteres"
+                                    },
+                                    minLength: {
+                                        value: 4,
+                                        message: "El apellido debe tener al menos 4 caracteres"
+                                    }
                                 })} />
                             </div>
                             <div className="mb-10">
-                                <InputField isError={errors.direccion ? true : false} icon={faHouse} label={"Dirección"} type={"text"} {...register("direccion", {
-                                    maxLength: 100,
-                                    required: true,
-                                    minLength: 5
+                                <InputField error={errors.direccion?.message} icon={faHouse} label={"Dirección"} type={"text"} {...register("direccion", {
+                                    maxLength: {
+                                        value: 50,
+                                        message: "La dirección no puede superar los 50 caracteres"
+
+                                    },
+                                    required: "La dirección es requerida",
+                                    minLength: {
+                                        value: 4,
+                                        message: "La dirección debe tener al menos 4 caracteres"
+                                    }
                                 })} />
                             </div>
                             <div className="mb-10">
-                                <InputField isError={errors.telefono ? true : false} icon={faPhone} label={"Teléfono móvil"} type={"number"} {...register("telefono", {
-                                    required: true,
-                                    maxLength: 10,
-                                    minLength: 10
+                                <InputField error={errors.telefono?.message} icon={faPhone} label={"Teléfono móvil"} type={"number"} {...register("telefono", {
+                                    required: "El teléfono es requerido",
+                                    maxLength: {
+                                        value: 10,
+                                        message: "El teléfono no puede superar los 10 caracteres"
+                                    },
+                                    minLength: {
+                                        value: 10,
+                                        message: "El teléfono debe tener 10 caracteres"
+                                    },
+                                    pattern: {
+                                        value: /^[0-9]+$/,
+                                        message: "El teléfono solo puede contener números"
+                                    }
                                 })} />
                             </div>
                         </div>
                         <div className="space-x-4 mt-8">
-                            <button disabled={disabled || Object.keys(errors).length > 0 ? true : false} type="submit" className="btn-blank" style={{ "--color": "#006af9", "--letterColor": "black" }} > Guardar información</button>
+                            <button disabled={disabled || Object.keys(errors).length > 0} type="submit" className="btn-blank" style={{ "--color": "#006af9", "--letterColor": "black" }} > Guardar información</button>
                         </div>
                     </form>
                 </div>
