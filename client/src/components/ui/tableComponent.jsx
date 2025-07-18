@@ -1,8 +1,7 @@
 import DataTable from "react-data-table-component";
 import Badge from "./badge";
 import InputField from "../Inputs/Input";
-import { faEye, faPenToSquare, faSearch, faTrash } from "@fortawesome/free-solid-svg-icons"
-import { useState } from "react";
+import { faEye, faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons"
 import useSearchTable from "@/hooks/useSearchTable";
 import withActions from "../../hooks/ActionsTable";
 import CopyButton from "../Buttons/CopyButton";
@@ -11,9 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
 export default function Table({ columns, data, title, onDelete, onEdit, viewMore }) {
-    const [search, setSearch] = useState("");
 
-    const filteredData = useSearchTable(data, search);
 
     const columnsWithActions = withActions(columns, onEdit, onDelete, viewMore)
 
@@ -66,7 +63,7 @@ export default function Table({ columns, data, title, onDelete, onEdit, viewMore
                     return col.cell ? col.cell(row) : ""
                 }
             }))}
-            data={filteredData}
+            data={data}
             pagination
             highlightOnHover
             responsive
@@ -77,10 +74,6 @@ export default function Table({ columns, data, title, onDelete, onEdit, viewMore
                 selectAllRowsItem: true,
                 selectAllRowsItemText: "Todos"
             }}
-            subHeader
-            subHeaderComponent={
-                <InputField icon={faSearch} isError={false} label={"Buscar..."} type={"search"} onChange={(e) => setSearch(e.target.value)} />
-            }
         />
     )
 }
