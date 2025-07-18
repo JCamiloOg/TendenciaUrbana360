@@ -19,11 +19,11 @@ export async function getOrder(req, res) {
         let products = 0;
 
         jwt.verify(token, SECRET_KEY, (err, decode) => {
-            if (err) return res.redirect('/');
+            if (err) return res.status(400).json({ redirect: "/" });
             user = decode;
         });
 
-        if (!cart) return res.redirect('/productos/carrito');
+        if (!cart) return res.status(400).json({ redirect: -1 });
 
         let keys = Object.keys(cart);
 
@@ -63,7 +63,7 @@ export async function getOrder(req, res) {
 
     } catch (e) {
         console.error(e);
-        res.status(500).send('Error al confirmar la compra');
+        res.status(500).json({ message: 'Error al confirmar la compra' });
     }
 
 }
@@ -76,14 +76,15 @@ export async function getAdress(req, res) {
         let amount = 0;
 
         jwt.verify(token, SECRET_KEY, (err, decode) => {
-            if (err) return res.redirect('/');
+            if (err) return res.status(400).json({ redirect: "/" })
 
             user = decode;
         });
 
-        if (!user) return res.redirect('/');
+        if (!user) return res.status(400).json({ redirect: "/" })
 
-        if (!cart) return res.redirect('/productos/carrito');
+        if (!cart) return res.status(400).json({ redirect: -1 })
+
 
         let keys = Object.keys(cart);
         let totalProducts = 0;
@@ -116,7 +117,7 @@ export async function getAdress(req, res) {
         })
     } catch (e) {
         console.log(e);
-        return res.status(500).send('Error al continuar con la compra')
+        return res.status(500).json({ message: 'Error al continuar con la compra' })
     }
 }
 

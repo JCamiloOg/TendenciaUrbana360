@@ -31,43 +31,48 @@ export async function checkAuth(req, res) {
     let redirect = req.query.redirect;
     let token = jwt.sign({ type: redirect }, SECRET_KEY, { expiresIn: '5min' });
 
-    res.redirect(`/clientes/perfil/modify?code=${encodeURIComponent(token)}&type=${redirect}`);
+    res.status(200).json({ redirect: `/clients/profile/modify?code=${token}&type=${redirect}` });
 }
 
 export async function modify(req, res) {
-    let token = req.query.code;
-    let tokenUser = req.cookies.token;
+    try {
+        let token = req.query.code;
+        let tokenUser = req.cookies.token;
 
-    let types = {
-        email: 'correo',
-        phone: 'teléfono',
-        password: 'contraseña',
-        address: 'dirección'
+        let types = {
+            email: 'correo',
+            phone: 'teléfono',
+            password: 'contraseña',
+            address: 'dirección'
+        }
+
+        if (!token) return res.status(404).json({ message: "Metódo no encotrado." });
+
+        let user;
+
+        jwt.verify(tokenUser, SECRET_KEY, (err, decode) => {
+            if (err) return res.status(400).json({ redirect: "/" })
+            user = decode;
+        });
+
+        jwt.verify(token, SECRET_KEY, (err, decode) => {
+            if (err) return res.status(400).json({ redirect: "/" })
+
+            if (!types[decode.type]) return res.status(404).json({ message: "Metódo no encotrado." });
+        })
+
+        let type = req.query.type;
+
+        if (!types[type]) return res.status(404).json({ message: "Metódo no encotrado." });
+
+        res.status(200).json({
+            type: type
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Error inesperado al obtener los detalles." })
     }
-
-    if (!token) return res.satus(404).json('404');
-
-    let user;
-
-    jwt.verify(tokenUser, SECRET_KEY, (err, decode) => {
-        if (err) return res.redirect('/');
-        user = decode;
-    });
-
-    jwt.verify(token, SECRET_KEY, (err, decode) => {
-        if (err) return res.redirect('/');
-
-        if (!types[decode.type]) return res.satus(404).json('404');
-    })
-
-    let type = req.query.type;
-
-    if (!types[type]) return res.satus(404).json('404');
-
-    res.status(200).json({
-        head: `Ingresa tu ${type == 'phone' ? 'nuevo' : 'nueva'} ${type[types]}`,
-        type: type
-    })
 }
 
 export async function updateInfo(req, res) {
@@ -77,13 +82,13 @@ export async function updateInfo(req, res) {
         let user;
 
         jwt.verify(token, SECRET_KEY, (err, decode) => {
-            if (err) return res.redirect('/');
+            if (err) return res.status(400).json({ redirect: "/" })
             user = decode;
         });
 
         if (email) {
             const clientExiste = await clientExist(email, null);
-            if (clientExiste.length > 0) return res.status(400).json({ message: 'El Correo ya está registrado' });
+            if (clientExiste.length > 0) return res.status(400).json({ message: 'El Correo ya está registrado', type: "email" });
 
             await updateEmail(email, user.id)
             return res.status(200).json({ message: 'Correo actualizado correctamente.' });
@@ -91,7 +96,7 @@ export async function updateInfo(req, res) {
 
         if (phone) {
             const clientExiste = await clientExist(null, phone)
-            if (clientExiste.length > 0) return res.status(400).json({ message: 'El número de teléfono ya está registrado' });
+            if (clientExiste.length > 0) return res.status(400).json({ message: 'El número de teléfono ya está registrado', type: "phone" });
 
             await updatePhone(phone, user.id)
             return res.status(200).json({ message: 'Teléfono actualizado correctamente.' });
@@ -106,12 +111,12 @@ export async function updateInfo(req, res) {
             const client = await getClient(user.id);
 
             const validPassword = await bcrypt.compare(lastPassword, client[0].Password);
-            if (!validPassword) return res.status(401).json({ message: 'La contraseña no coincide con la actual' });
+            if (!validPassword) return res.status(400).json({ message: 'La contraseña no coincide con la actual', type: "lastPassword" });
 
-            if (password != password2) return res.status(400).json({ message: 'Las contraseñas no coinciden' });
+            if (password != password2) return res.status(400).json({ message: 'Las contraseñas no coinciden', type: "confirmPassword" });
 
             const verifyPastPassword = await bcrypt.compare(password, client[0].Password);
-            if (verifyPastPassword) return res.status(400).json({ message: 'La nueva contraseña es igual a la actual.' });
+            if (verifyPastPassword) return res.status(400).json({ message: 'La nueva contraseña es igual a la actual.', type: "password" });
 
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
@@ -124,7 +129,7 @@ export async function updateInfo(req, res) {
         return res.status(400).json({ message: 'Error desconocido al actualizar.' });
     } catch (e) {
         console.error(e);
-        return res.status(400).json({ message: 'Error al actualizar' });
+        return res.status(500).json({ message: 'Error al actualizar' });
     }
 }
 
