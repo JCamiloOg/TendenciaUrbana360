@@ -25,7 +25,7 @@ export default function ModalImage({ image, isOpen, updateVal }) {
                 <div className="flex justify-center">
                     {
                         getExtension(image) === "webp" || getExtension(image) === "jpg" || getExtension(image) === "jpeg" || getExtension(image) === "png" ?
-                            <img src={image} alt="Guía de tallas" className="w-full max-h-[650px]" />
+                            <img src={image} alt="Guía de tallas" className="w-full max-h-[650px]  object-cover" />
                             :
                             <video src={image} muted controls={false} autoPlay loop className="w-full h-200"></video>
                     }
