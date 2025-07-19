@@ -88,3 +88,25 @@ export async function getAll() {
         throw new Error("Error en la consulta")
     }
 }
+
+export async function getProductsBySearch(query, category) {
+    try {
+        if (category) {
+            if (category === "Perfume") {
+                const [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN perfumeria e ON p.Id_producto = e.Id_producto WHERE Nombre LIKE ? AND p.Tipo_Producto = ? AND p.Estado = ? GROUP BY p.Id_producto", [`%${query}%`, category, 'Activado']);
+                return rows;
+            }
+            const [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN extras e ON p.Id_producto = e.Id_producto WHERE Nombre LIKE ? AND p.Tipo_Producto = ? AND p.Estado = ? GROUP BY p.Id_producto", [`%${query}%`, category, 'Activado']);
+            return rows;
+        } else {
+            const [perfumes] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN perfumeria e ON p.Id_producto = e.Id_producto WHERE p.Nombre LIKE ? AND p.Estado = ? GROUP BY p.Id_producto", [`%${query}%`, 'Activado']);
+
+            const [others] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN extras e ON p.Id_producto = e.Id_producto WHERE p.Nombre LIKE ? AND p.Estado = ? GROUP BY p.Id_producto", [`%${query}%`, 'Activado']);
+
+            return [...perfumes, ...others];
+        }
+    } catch (e) {
+        console.error(e);
+        throw new Error("Error en la consulta");
+    }
+}

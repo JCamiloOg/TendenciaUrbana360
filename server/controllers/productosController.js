@@ -1,4 +1,4 @@
-import { getAll, getAllExtra, getDescription, getExtra, getPerfumeria, getProductsCategory, getTallas, getProduct as getProductByID } from "../models/productos.js";
+import { getAll, getAllExtra, getDescription, getExtra, getPerfumeria, getProductsCategory, getTallas, getProduct as getProductByID, getProductsBySearch } from "../models/productos.js";
 
 export async function getProduct(req, res) {
     try {
@@ -153,5 +153,34 @@ export async function getAllProducts(req, res) {
     } catch (e) {
         console.error(e);
         res.status(500).json({ message: 'Error al obtener todos los productos' });
+    }
+}
+
+export async function searchProducts(req, res) {
+    try {
+        const { query } = req.query;
+        const { category } = req.params;
+
+        const validCategorys = {
+            calzado: 'Calzado',
+            camisas: 'Camisa',
+            pantalones: 'Pantalon',
+            gafas: 'Gafas',
+            gorras: 'Gorra',
+            relojes: 'Reloj',
+            perfumes: 'Perfume',
+            vapeadores: 'Vapeador'
+        }
+
+
+        if (category && !validCategorys[category]) return res.status(404).json({ message: 'Página no encontrada.' });
+        if (!query || query.length < 3) return res.status(200).json({ products: [] });
+
+        const products = await getProductsBySearch(query, validCategorys[category]);
+
+        res.status(200).json({ products: products });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Error al obtener los productos' });
     }
 }

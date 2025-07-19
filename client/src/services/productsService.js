@@ -16,3 +16,8 @@ export async function getProductsByCategory(category) {
 export async function getProductByID(type, id) {
     return await axiosInstance.get(`/products/${type}/${id}`)
 }
+
+export async function searchProducts(query, category) {
+    if (category) return await axiosInstance.get(`/products/search/${category}?query=${query}`)
+    else return await axiosInstance.get(`/products/search?query=${query}`);
+}

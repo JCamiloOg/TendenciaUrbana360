@@ -1,8 +1,8 @@
 // Modules
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faBoxesStacked, faCartShopping, faClock, faGlasses, faHatCowboy, faJoint, faShoePrints, faSprayCanSparkles, faTShirt, faUser } from "@fortawesome/free-solid-svg-icons"
+import { faBars, faBoxesStacked, faCartShopping, faClock, faClockRotateLeft, faGlasses, faHatCowboy, faJoint, faShoePrints, faSprayCanSparkles, faTShirt, faUser, faXmark } from "@fortawesome/free-solid-svg-icons"
 
 // components 
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu"
@@ -16,20 +16,57 @@ import { logOut } from "../../services/users/usersServices";
 // imgs
 import navbarImg from "../../assets/TR3Logo340px.svg";
 import Cart from "../Cart/Cart";
+import { useForm } from "react-hook-form";
 
 export default function NavBar({ isLogin, openLogin, openRegister, active, productsLenght }) {
     const [home, setHome] = useState(false);
     const [products, setProducts] = useState(false);
     const [profile, setProfile] = useState(false);
+    const [search, setSearch] = useState(false);
 
+    const navigate = useNavigate();
+    const { handleSubmit, register, setValue, watch } = useForm();
     const { isOpen, toggle, close } = useMobileMenu();
     const { isOpenUser, toggleUser, closeUser } = useUserMenu();
     const [isOpenCart, setIsOpenCart] = useState(false);
+    const [searchHistory, setSearchHistory] = useState(localStorage.getItem("lastSearches") ? JSON.parse(localStorage.getItem("lastSearches")) : []);
+    const [isOpenHistory, setIsOpenHistory] = useState(false);
 
     const menuRefNav = useRef(null);
     const buttonRefNav = useRef(null);
     const menuRefUser = useRef(null);
     const buttonRefUser = useRef(null);
+    const inputSearchRef = useRef(null);
+    const searchHistoryRef = useRef(null);
+    const searchHistoryRefMobile = useRef(null);
+    const inputSearchRefMobile = useRef(null);
+
+
+    const openHistory = () => {
+        setIsOpenHistory(true);
+    }
+    const closeHistory = () => {
+        setIsOpenHistory(false);
+    }
+
+    const handleXmark = (idx) => {
+        const newHistory = [...searchHistory]
+        newHistory.splice(idx, 1);
+        localStorage.setItem("lastSearches", JSON.stringify(newHistory));
+        setSearchHistory(newHistory);
+    }
+
+    const onSearch = (query) => {
+        const history = searchHistory
+        if (!history.includes(query) && query.length > 3) {
+            const newHistory = [query, ...history];
+            localStorage.setItem("lastSearches", JSON.stringify(newHistory));
+            setSearchHistory(newHistory);
+        }
+        navigate({ pathname: "/products/search", search: `?query=${query}` });
+    }
+
+
 
     useState(() => {
         switch (active) {
@@ -41,8 +78,16 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                 break;
             case "Profile":
                 setProfile(true);
+                break;
+            case "Search":
+                setSearch(true);
+                break;
+            default:
+                setHome(false);
+                setProducts(false);
+                break;
         }
-    })
+    }, [])
 
     const exit = async () => {
         try {
@@ -65,7 +110,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
     const handleCart = () => {
         setIsOpenCart(!isOpenCart);
     }
-
+    useClickOutSide([inputSearchRef, searchHistoryRef], closeHistory)
     useClickOutSide([menuRefNav, buttonRefNav], close);
     useClickOutSide([menuRefUser, buttonRefUser], closeUser);
     return (
@@ -200,15 +245,54 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                             </div>
                         </div>
                         <div className="flex items-center">
-                            <div className="hidden md:flex md:ml-4">
-                                <div className="relative">
-                                    <input type="search" className="bg-white text-black rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 w-64 transition-all duration-200" placeholder="Buscar Producto..." />
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex flex-wrap gap-3 items-center pointer-events-none">
-                                        <svg className="h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                                        </svg>
-                                    </div>
-                                </div>
+                            <div className="hidden md:flex  md:ml-4">
+                                {
+                                    !search ?
+                                        <form onSubmit={handleSubmit(() => {
+                                            onSearch(watch("query"))
+                                            setValue("query", "")
+                                        })} className="relative">
+                                            <input ref={inputSearchRef}
+                                                type="search"
+                                                className="bg-white text-black rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 w-64 transition-all duration-200"
+                                                placeholder="Buscar Producto..."
+                                                onClick={openHistory}
+                                                {...register("query", {
+                                                    required: true
+                                                })}
+                                                autoComplete="off"
+                                            />
+                                            <div className="absolute inset-y-0 left-0 pl-3 flex flex-wrap gap-3 items-center pointer-events-none">
+                                                <svg className="h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                                                </svg>
+                                            </div>
+                                            {
+                                                searchHistory.length > 0 ?
+                                                    <div className={`absolute ${isOpenHistory ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}  mt-1 bg-white border shadow-lg rounded-md w-64 z-30}`} ref={searchHistoryRef}>
+                                                        <ul className="p-2 text-sm">
+                                                            {
+                                                                searchHistory.slice(0, 5).map((search, idx) => (
+                                                                    <li className="cursor-pointer flex justify-between text-black hover:hover:bg-[#004aad]/50 px-2 py-1 rounded transition-all duration-300" key={idx}>
+                                                                        <div className="w-full" onClick={() => navigate({ pathname: "/products/search", search: `?query=${search}` })}>
+                                                                            <FontAwesomeIcon icon={faClockRotateLeft} />  &nbsp; {search}
+                                                                        </div>
+                                                                        <FontAwesomeIcon onClick={() => handleXmark(idx)} icon={faXmark} />
+                                                                    </li>
+
+                                                                ))
+                                                            }
+                                                        </ul>
+                                                    </div>
+
+                                                    :
+                                                    <></>
+                                            }
+
+                                        </form>
+                                        :
+                                        <></>
+                                }
                             </div>
                             {
                                 isLogin ?
@@ -251,17 +335,56 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                         <Link to="/" className={`${home ? "bg-yellow-500 text-black" : "text-gray-300 hover:bg-gray-700 hover:text-white"} block px-3 py-2 rounded-md text-base font-medium`} >Inicio</Link>
                         <Link to="/products" className={`${products ? "bg-yellow-500 text-black" : "text-gray-300 hover:bg-gray-700 hover:text-white"} block px-3 py-2 rounded-md text-base font-medium`}>Productos</Link>
                     </div>
+                    {
+                        !search ?
+                            <>
+                                <div className="px-2 pt-2 pb-3">
+                                    <form onSubmit={handleSubmit(() => {
+                                        onSearch(watch("query"))
+                                        setValue("query", "")
+                                    })} className="relative">
+                                        <input ref={inputSearchRefMobile}
+                                            type="search"
+                                            className="bg-white text-black rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 w-full transition-all duration-200"
+                                            placeholder="Buscar Producto..."
+                                            onClick={openHistory}
+                                            {...register("query", {
+                                                required: true
+                                            })}
+                                            autoComplete="off"
+                                        />
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex flex-wrap gap-3 items-center pointer-events-none">
+                                            <svg className="h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        {
+                                            searchHistory.length > 0 ?
+                                                <div className={`absolute ${isOpenHistory ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}  mt-1 bg-white border shadow-lg rounded-md w-full z-30}`} ref={searchHistoryRefMobile}>
+                                                    <ul className="p-2 text-sm">
+                                                        {
+                                                            searchHistory.slice(0, 5).map((search, idx) => (
+                                                                <li className="cursor-pointer flex justify-between text-black hover:hover:bg-[#004aad]/50 px-2 py-1 rounded transition-all duration-300" key={idx}>
+                                                                    <div className="w-full" onClick={() => navigate({ pathname: "/products/search", search: `?query=${search}` })}>
+                                                                        <FontAwesomeIcon icon={faClockRotateLeft} />  &nbsp; {search}
+                                                                    </div>
+                                                                    <FontAwesomeIcon onClick={() => handleXmark(idx)} icon={faXmark} />
+                                                                </li>
 
-                    <div className="px-2 pt-2 pb-3">
-                        <div className="relative">
-                            <input type="text" className="bg-white text-black w-full rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Buscar producto..." />
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg className="h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
+                                                            ))
+                                                        }
+                                                    </ul>
+                                                </div>
+
+                                                :
+                                                <></>
+                                        }
+                                    </form>
+                                </div>
+                            </>
+                            :
+                            <></>
+                    }
                     {
                         isLogin ?
                             <div className="pt-4 pb-3 border-t border-gray-700">
