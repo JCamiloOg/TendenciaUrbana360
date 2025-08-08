@@ -1,13 +1,12 @@
 import express from 'express';
 const router = express.Router({ mergeParams: true });
 
-import { addModelo, changeStatus, createProduct, createTalla, deleteModelo, deleteTalla, getExtraInfo, getModelo, getProduct, getTallas, getTallasProducto, updateProductController, updateImagen, updateModelo } from "../../controllers/Admin/productsController.js"
+import { addModelo, changeStatus, createProduct, createTalla, deleteModelo, deleteTalla, getExtraInfo, getModelo, getProduct, getTallasProducto, updateProductController, updateImagen, updateModelo } from "../../controllers/Admin/productsController.js"
 import { isAdmin } from '../../middlewares/verifyToken.js';
 import { upload } from '../../config/uploadFiles.js';
 
 // Calzado
 router.get('/', isAdmin, getProduct);
-router.get('/sizes', isAdmin, getTallas);
 router.get('/:id', isAdmin, getProduct);
 
 router.post('/create', isAdmin, upload.any(), createProduct);
