@@ -5,17 +5,21 @@ import { login } from "../../services/users/usersServices";
 import { Toast } from "../../hooks/useToastAlert";
 import { API_URL } from "../../config";
 import InputModal from "../Inputs/InputModal";
+import { useNavigate } from "react-router-dom";
+
 
 
 export default function ModalLogin({ isOpenModal, isVisible, close, openRegister }) {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [disabled, setDisabled] = useState(null);
+    const navigate = useNavigate();
 
 
     const Onsubmit = async (data) => {
         try {
             const response = await login(data);
             if (response.status === 200) {
+                if (response.data.redirect) return navigate(response.data.redirect);
                 Toast.fire({
                     icon: "success",
                     title: response.data.message
