@@ -144,7 +144,7 @@ export default function Product() {
             <div className="container mx-auto px-10 pt-30">
                 <div className="grid grid-cols-12 bg-white p-14 rounded-2xl border-gray-700">
                     <div className="2xl:col-span-8 xl:col-span-8 lg:col-span-8 md:col-span-8 sm:col-span-12 col-span-12 mb-10  place-items-center">
-                        <h1 className="text-5xl mb-5 font-bold uppercase text-left">{product.Nombre}</h1>
+                        <h1 className="text-3xl 2xl:text-5xl xl:text-5xl lg:text-5xl md:text-4xl sm:text-4xl  mb-5 font-bold uppercase text-left">{product.Nombre}</h1>
                         <div ref={emblaRef} className={`2xl:w-[75%] xl:w-[75%] lg:w-[75%] md:w-[70%] sm:w-[90%] w-[100%] overflow-hidden`}
                         >
                             <div className="flex">

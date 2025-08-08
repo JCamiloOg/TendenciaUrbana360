@@ -1,6 +1,6 @@
 export default function SelectRounded({ options = [], labelKey = "label", valueKey = "ID", selected, onSelect }) {
     return (
-        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4">
             {options.map((option) => (
                 <button
                     key={option[valueKey]}

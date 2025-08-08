@@ -2,7 +2,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faBoxesStacked, faCartShopping, faClock, faClockRotateLeft, faGlasses, faHatCowboy, faJoint, faShoePrints, faSprayCanSparkles, faTShirt, faUser, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { faBars, faBoxesStacked, faCartShopping, faChevronRight, faClock, faClockRotateLeft, faGlasses, faHatCowboy, faJoint, faShoePrints, faSprayCanSparkles, faTShirt, faUser, faXmark } from "@fortawesome/free-solid-svg-icons"
 
 // components 
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu"
@@ -17,12 +17,15 @@ import { logOut } from "../../services/users/usersServices";
 import navbarImg from "../../assets/TR3Logo340px.svg";
 import Cart from "../Cart/Cart";
 import { useForm } from "react-hook-form";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { Button } from "../ui/button";
 
 export default function NavBar({ isLogin, openLogin, openRegister, active, productsLenght }) {
     const [home, setHome] = useState(false);
     const [products, setProducts] = useState(false);
     const [profile, setProfile] = useState(false);
     const [search, setSearch] = useState(false);
+    const [openCollapsible, setOpenCollapsible] = useState(false);
 
     const navigate = useNavigate();
     const { handleSubmit, register, setValue, watch } = useForm();
@@ -31,6 +34,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
     const [isOpenCart, setIsOpenCart] = useState(false);
     const [searchHistory, setSearchHistory] = useState(localStorage.getItem("lastSearches") ? JSON.parse(localStorage.getItem("lastSearches")) : []);
     const [isOpenHistory, setIsOpenHistory] = useState(false);
+    const [isOpenHistoryMobile, setIsOpenHistoryMobile] = useState(false);
 
     const menuRefNav = useRef(null);
     const buttonRefNav = useRef(null);
@@ -49,6 +53,15 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
         setIsOpenHistory(false);
     }
 
+    const openHistoryMobile = () => {
+        setIsOpenHistoryMobile(true);
+    }
+
+    const closeHistoryMobile = () => {
+        setIsOpenHistoryMobile(false);
+    }
+
+
     const handleXmark = (idx) => {
         const newHistory = [...searchHistory]
         newHistory.splice(idx, 1);
@@ -57,6 +70,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
     }
 
     const onSearch = (query) => {
+        setValue("query", "");
         const history = searchHistory
         if (!history.includes(query) && query.length > 3) {
             const newHistory = [query, ...history];
@@ -111,11 +125,12 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
         setIsOpenCart(!isOpenCart);
     }
     useClickOutSide([inputSearchRef, searchHistoryRef], closeHistory)
+    useClickOutSide([inputSearchRefMobile, searchHistoryRefMobile], closeHistoryMobile);
     useClickOutSide([menuRefNav, buttonRefNav], close);
     useClickOutSide([menuRefUser, buttonRefUser], closeUser);
     return (
         <>
-            <nav className="bg-[#004aad] text-white shadow-lg z-49 fixed top-0 w-full">
+            <nav className={`bg-[#004aad] text-white shadow-lg z-49 fixed top-0 w-full ${isOpen ? "overflow-y-auto" : ""} `}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
@@ -127,121 +142,72 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                                 <Link to="/" className={`border-b-2 ${home ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white border-transparent"} px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300`}>
                                     Inicio
                                 </Link>
-                                {
-                                    home || products ?
-                                        <NavigationMenu>
-                                            <NavigationMenuList >
-                                                <NavigationMenuItem >
-                                                    <NavigationMenuTrigger className={`!bg-transparent  data-[state=open]:!text-white  rounded-none hover:!bg-transparent hover:!text-white border-b-2 ${products ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white border-transparent"} px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300`}>Productos</NavigationMenuTrigger>
-                                                    <NavigationMenuContent className={`bg-[#004aad] !border-none`}>
-                                                        <ul className="grid w-[200px] gap-4">
-                                                            <li>
-                                                                <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
-                                                                    <Link to="/products" className="flex-row items-center gap-2">
-                                                                        <FontAwesomeIcon className="text-white" icon={faBoxesStacked} />
-                                                                        Todos los productos
-                                                                    </Link>
-                                                                </NavigationMenuLink>
-
-                                                                {
-                                                                    productsLenght.calzado != 0 ?
-                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
-                                                                            <Link to="/products/calzado" className="flex-row items-center gap-2">
-                                                                                <FontAwesomeIcon className="text-white" icon={faShoePrints} />
-                                                                                Calzado
-                                                                            </Link>
-                                                                        </NavigationMenuLink>
-                                                                        :
-                                                                        <></>
-                                                                }
-                                                                {
-                                                                    productsLenght.camisas != 0 ?
-                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
-                                                                            <Link to="/products/camisas" className="flex-row items-center gap-2">
-                                                                                <FontAwesomeIcon className="text-white" icon={faTShirt} />
-                                                                                Camisas
-                                                                            </Link>
-                                                                        </NavigationMenuLink>
-                                                                        :
-                                                                        <></>
-                                                                }
-                                                                {
-                                                                    productsLenght.pantalones != 0 ?
-                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
-                                                                            <Link to="/products/pantalones" className="flex-row items-center gap-2">
-                                                                                Pantalones
-                                                                            </Link>
-                                                                        </NavigationMenuLink>
-                                                                        :
-                                                                        <></>
-                                                                }
-                                                                {
-                                                                    productsLenght.gorras != 0 ?
-                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
-                                                                            <Link to="/products/gorras" className="flex-row items-center gap-2">
-                                                                                <FontAwesomeIcon className="text-white" icon={faHatCowboy} />
-                                                                                Gorras
-                                                                            </Link>
-                                                                        </NavigationMenuLink>
-                                                                        :
-                                                                        <></>
-                                                                }
-                                                                {
-                                                                    productsLenght.relojes != 0 ?
-                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
-                                                                            <Link to="/products/relojes" className="flex-row items-center gap-2">
-                                                                                <FontAwesomeIcon className="text-white" icon={faClock} />
-                                                                                Relojes
-                                                                            </Link>
-                                                                        </NavigationMenuLink>
-                                                                        :
-                                                                        <></>
-                                                                }
-                                                                {
-                                                                    productsLenght.gafas != 0 ?
-                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
-                                                                            <Link to="/products/gafas" className="flex-row items-center gap-2">
-                                                                                <FontAwesomeIcon className="text-white" icon={faGlasses} />
-                                                                                Gafas
-                                                                            </Link>
-                                                                        </NavigationMenuLink>
-                                                                        :
-                                                                        <></>
-                                                                }
-                                                                {
-                                                                    productsLenght.perfumes != 0 ?
-                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
-                                                                            <Link to="/products/perfumes" className="flex-row items-center gap-2">
-                                                                                <FontAwesomeIcon className="text-white" icon={faSprayCanSparkles} />
-                                                                                Perfumes
-                                                                            </Link>
-                                                                        </NavigationMenuLink>
-                                                                        :
-                                                                        <></>
-                                                                }
-                                                                {
-                                                                    productsLenght.vapers != 0 ?
-                                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
-                                                                            <Link to="/products/vapeadores" className="flex-row items-center gap-2">
-                                                                                <FontAwesomeIcon className="text-white" icon={faJoint} />
-                                                                                Vapers
-                                                                            </Link>
-                                                                        </NavigationMenuLink>
-                                                                        :
-                                                                        <></>
-                                                                }
-                                                            </li>
-                                                        </ul>
-                                                    </NavigationMenuContent>
-                                                </NavigationMenuItem>
-                                            </NavigationMenuList>
-                                        </NavigationMenu>
-                                        :
-                                        <Link to="/products" className={`border-b-2 ${products ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white border-transparent"} px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300`}>
-                                            Productos
-                                        </Link>
-
-                                }
+                                <NavigationMenu>
+                                    <NavigationMenuList >
+                                        <NavigationMenuItem >
+                                            <NavigationMenuTrigger className={`!bg-transparent  data-[state=open]:!text-white  rounded-none hover:!bg-transparent hover:!text-white border-b-2 ${products ? "border-yellow-500 text-white" : "text-gray-300 hover:border-yellow-500 hover:text-white border-transparent"} px-1 pt-1 inline-flex items-center text-sm font-bold transition-all duration-300`}>Productos</NavigationMenuTrigger>
+                                            <NavigationMenuContent className={`bg-[#004aad] !border-none`}>
+                                                <ul className="grid w-[200px] gap-4">
+                                                    <li>
+                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                            <Link to="/products" className="flex-row items-center gap-2">
+                                                                <FontAwesomeIcon className="text-white" icon={faBoxesStacked} />
+                                                                Todos los productos
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                            <Link to="/products/calzado" className="flex-row items-center gap-2">
+                                                                <FontAwesomeIcon className="text-white" icon={faShoePrints} />
+                                                                Calzado
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                            <Link to="/products/camisas" className="flex-row items-center gap-2">
+                                                                <FontAwesomeIcon className="text-white" icon={faTShirt} />
+                                                                Camisas
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                            <Link to="/products/pantalones" className="flex-row items-center gap-2">
+                                                                Pantalones
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                            <Link to="/products/gorras" className="flex-row items-center gap-2">
+                                                                <FontAwesomeIcon className="text-white" icon={faHatCowboy} />
+                                                                Gorras
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                            <Link to="/products/relojes" className="flex-row items-center gap-2">
+                                                                <FontAwesomeIcon className="text-white" icon={faClock} />
+                                                                Relojes
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                            <Link to="/products/gafas" className="flex-row items-center gap-2">
+                                                                <FontAwesomeIcon className="text-white" icon={faGlasses} />
+                                                                Gafas
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                            <Link to="/products/perfumes" className="flex-row items-center gap-2">
+                                                                <FontAwesomeIcon className="text-white" icon={faSprayCanSparkles} />
+                                                                Perfumes
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                        <NavigationMenuLink className={`hover:bg-[#002960] hover:text-white text-white font-bold`} asChild>
+                                                            <Link to="/products/vapeadores" className="flex-row items-center gap-2">
+                                                                <FontAwesomeIcon className="text-white" icon={faJoint} />
+                                                                Vapers
+                                                            </Link>
+                                                        </NavigationMenuLink>
+                                                    </li>
+                                                </ul>
+                                            </NavigationMenuContent>
+                                        </NavigationMenuItem>
+                                    </NavigationMenuList>
+                                </NavigationMenu>
                             </div>
                         </div>
                         <div className="flex items-center">
@@ -250,11 +216,17 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                                     !search ?
                                         <form onSubmit={handleSubmit(() => {
                                             onSearch(watch("query"))
-                                            setValue("query", "")
                                         })} className="relative">
                                             <input ref={inputSearchRef}
                                                 type="search"
                                                 className="bg-white text-black rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 w-64 transition-all duration-200"
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        onSearch(e.currentTarget.value)
+                                                    }
+                                                }
+                                                }
                                                 placeholder="Buscar Producto..."
                                                 onClick={openHistory}
                                                 {...register("query", {
@@ -333,7 +305,56 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                 <div ref={menuRefNav} className={`transition-all duration-500 ease-in-out md:hidden ${isOpen ? "max-h-[500px] opacity-100 pointer-events-auto" : " max-h-0 opacity-0 pointer-events-none"}`} id="mobile-menu">
                     <div className="px-2 pt-2 pb-3 space-y-1">
                         <Link to="/" className={`${home ? "bg-yellow-500 text-black" : "text-gray-300 hover:bg-gray-700 hover:text-white"} block px-3 py-2 rounded-md text-base font-medium`} >Inicio</Link>
-                        <Link to="/products" className={`${products ? "bg-yellow-500 text-black" : "text-gray-300 hover:bg-gray-700 hover:text-white"} block px-3 py-2 rounded-md text-base font-medium`}>Productos</Link>
+                        <Collapsible open={openCollapsible} onOpenChange={setOpenCollapsible}>
+                            <CollapsibleTrigger asChild className={`w-full group/collapsible`}>
+                                <Button className={`${products ? "bg-yellow-500 text-black" : "text-gray-300 bg-transparent hover:bg-gray-700 hover:text-white"} px-3 py-2 rounded-md text-base font-medium w-full text-left flex justify-between`}>
+                                    <span>Productos</span>
+                                    <FontAwesomeIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 " icon={faChevronRight} />
+                                </Button>
+                            </CollapsibleTrigger>
+                            <div className={`transition-all duration-500 overflow-hidden ${openCollapsible ? "h-90 opacity-100" : "h-0 opacity-0"}`}>
+                                <CollapsibleContent>
+                                    <ul className="p-4">
+                                        <li className="flex gap-4 mb-4">
+                                            <FontAwesomeIcon icon={faBoxesStacked} />
+                                            <Link to="/products">Todos los productos</Link>
+                                        </li>
+                                        <li className="flex gap-4 mb-4">
+                                            <FontAwesomeIcon icon={faShoePrints} />
+                                            <Link to="/products/calzado">Calzado</Link>
+                                        </li>
+                                        <li className="flex gap-4 mb-4">
+                                            <FontAwesomeIcon icon={faTShirt} />
+                                            <Link to="/products/camisas">Camisas</Link>
+                                        </li>
+                                        <li className="flex gap-4 mb-4">
+                                            <FontAwesomeIcon icon={faTShirt} />
+                                            <Link to="/products/pantalones">Pantalones</Link>
+                                        </li>
+                                        <li className="flex gap-4 mb-4">
+                                            <FontAwesomeIcon icon={faHatCowboy} />
+                                            <Link to="/products/gorras">Gorras</Link>
+                                        </li>
+                                        <li className="flex gap-4 mb-4">
+                                            <FontAwesomeIcon icon={faClock} />
+                                            <Link to="/products/relojes">Relojes</Link>
+                                        </li>
+                                        <li className="flex gap-4 mb-4">
+                                            <FontAwesomeIcon icon={faGlasses} />
+                                            <Link to="/products/gafas">Gafas</Link>
+                                        </li>
+                                        <li className="flex gap-4 mb-4">
+                                            <FontAwesomeIcon icon={faSprayCanSparkles} />
+                                            <Link to="/products/perfumes">Perfumes</Link>
+                                        </li>
+                                        <li className="flex gap-4">
+                                            <FontAwesomeIcon icon={faJoint} />
+                                            <Link to="/products/vapeadores">Vapers</Link>
+                                        </li>
+                                    </ul>
+                                </CollapsibleContent>
+                            </div>
+                        </Collapsible>
                     </div>
                     {
                         !search ?
@@ -341,13 +362,18 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                                 <div className="px-2 pt-2 pb-3">
                                     <form onSubmit={handleSubmit(() => {
                                         onSearch(watch("query"))
-                                        setValue("query", "")
                                     })} className="relative">
                                         <input ref={inputSearchRefMobile}
                                             type="search"
                                             className="bg-white text-black rounded-md pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 w-full transition-all duration-200"
                                             placeholder="Buscar Producto..."
-                                            onClick={openHistory}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    e.preventDefault();
+                                                    onSearch(e.currentTarget.value)
+                                                }
+                                            }}
+                                            onClick={openHistoryMobile}
                                             {...register("query", {
                                                 required: true
                                             })}
@@ -360,7 +386,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                                         </div>
                                         {
                                             searchHistory.length > 0 ?
-                                                <div className={`absolute ${isOpenHistory ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}  mt-1 bg-white border shadow-lg rounded-md w-full z-30}`} ref={searchHistoryRefMobile}>
+                                                <div className={`absolute ${isOpenHistoryMobile ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}  mt-1 bg-white border shadow-lg rounded-md w-full z-30}`} ref={searchHistoryRefMobile}>
                                                     <ul className="p-2 text-sm">
                                                         {
                                                             searchHistory.slice(0, 5).map((search, idx) => (
@@ -375,7 +401,6 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                                                         }
                                                     </ul>
                                                 </div>
-
                                                 :
                                                 <></>
                                         }

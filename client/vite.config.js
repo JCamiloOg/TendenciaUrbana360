@@ -13,6 +13,10 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+  base: "/",
+  build: {
+    outDir: "dist"
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src")

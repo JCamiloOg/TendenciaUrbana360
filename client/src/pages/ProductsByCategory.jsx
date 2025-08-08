@@ -57,13 +57,17 @@ export default function ProductsByCategory() {
         getProducts();
     }, [])
 
+    useEffect(() => {
+        getProducts();
+    }, [type])
+
     if (error) return <Error status={error.status} error={error.message} />
     if (info) return <NoInfoComplete />
 
     return (
         <>
             <Loader isVisible={loading} />
-            <NavBar openLogin={open} openRegister={openRegister} isLogin={isLogin} />
+            <NavBar openLogin={open} openRegister={openRegister} isLogin={isLogin} active={"Products"} productsLenght={[]} />
 
             <ModalLogin close={close} isOpenModal={isOpenModal} isVisible={isVisible} openRegister={openRegister} />
             <ModalRegister close={closeRegister} isOpenModal={isOpenModalRegister} isVisible={isVisibleReigster} openLogin={open} />

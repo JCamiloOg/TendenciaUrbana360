@@ -2,7 +2,7 @@ import { IMG_URL } from "@/config"
 
 export default function ImageSelector({ options, onSelect, selectedId }) {
     return (
-        <div className="grid grid-cols-3 max-h-70 overflow-y-auto sm:grid-cols-3 sm:overflow-y-auto md:grid-cols-2 md:overflow-y-auto lg:grid-cols-2 lg:overflow-y-auto xl:grid-cols-3 xl:overflow-y-auto  gap-4">
+        <div className="grid grid-cols-2 max-h-70 overflow-y-auto sm:grid-cols-3 sm:overflow-y-auto md:grid-cols-2 md:overflow-y-auto lg:grid-cols-2 lg:overflow-y-auto xl:grid-cols-3 xl:overflow-y-auto  gap-4">
             {options.map((option, idx) => (
                 <button
                     key={option.ID}
