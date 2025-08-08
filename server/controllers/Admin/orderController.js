@@ -8,8 +8,7 @@ export async function getOrders(req, res) {
     try {
         const orders = await getAllOrders();
         res.status(200).json({
-            route: "Pedidos",
-            orders
+            orders: orders
         });
     } catch (error) {
         console.error(error);
@@ -30,7 +29,9 @@ export async function getDetailOrder(req, res) {
 
 export async function changeStatus(req, res) {
     try {
-        const { id, status } = req.body;
+        const { status } = req.body;
+        const { id } = req.params;
+
         const validStatus = ["Pendiente", "En Proceso", "Completado", "Cancelado"];
 
         if (!validStatus.includes(status)) {

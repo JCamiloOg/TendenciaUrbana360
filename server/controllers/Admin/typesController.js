@@ -9,8 +9,7 @@ export async function getTipos(req, res) {
     try {
         const tipos = await getAllTipos();
         res.status(200).json({
-            route: "Tipos",
-            tipos
+            types: tipos
         });
     } catch (error) {
         console.error(error);

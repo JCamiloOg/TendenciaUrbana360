@@ -9,7 +9,6 @@ export async function getTallas(req, res) {
     try {
         const tallas = await getAllSizes();
         res.status(200).json({
-            route: "Tallas",
             tallas
         });
     } catch (error) {
@@ -27,7 +26,7 @@ export async function createTalla(req, res) {
             return res.status(400).json({ message: "La talla ya existe" });
         }
 
-        await createSize(talla, tipo);
+        await createSize(talla.toUpperCase(), tipo);
         res.status(200).json({ message: "Talla creada correctamente" });
     } catch (error) {
         console.error(error);

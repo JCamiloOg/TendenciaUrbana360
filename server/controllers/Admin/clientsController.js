@@ -13,17 +13,14 @@ export async function getClientes(req, res) {
     try {
         if (req.params.id) {
             const cliente = await getClienteById(req.params.id);
-            if (cliente.length === 0) {
-                return res.status(404).send("Cliente no encontrado");
-            }
+
+            if (cliente.length === 0) return res.status(404).json({ message: "Cliente no encontrado" });
+
             return res.status(200).json(cliente);
         }
 
         const clientes = await getAllClientes();
-        res.status(200).json({
-            route: "Clientes",
-            clientes
-        });
+        res.status(200).json({ clients: clientes });
     } catch (error) {
         console.error(error);
         res.status(500).send("Error al obtener los clientes");
@@ -32,7 +29,9 @@ export async function getClientes(req, res) {
 
 export async function updateRol(req, res) {
     try {
-        const { id, rol } = req.body;
+        const { rol } = req.body;
+        const { id } = req.params;
+
         await updateClienteRol(id, rol);
         res.status(200).json({ message: "Rol actualizado correctamente" });
     } catch (error) {
@@ -43,7 +42,9 @@ export async function updateRol(req, res) {
 
 export async function updateStatus(req, res) {
     try {
-        const { id, status } = req.body;
+        const { status } = req.body;
+        const { id } = req.params;
+
         await updateClienteEstado(id, status);
         res.status(200).json({ message: "Estado actualizado correctamente" });
     } catch (error) {

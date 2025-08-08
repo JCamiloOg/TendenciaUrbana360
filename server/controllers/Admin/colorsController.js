@@ -9,8 +9,7 @@ export async function getColores(req, res) {
     try {
         const colores = await getAllColors();
         res.status(200).json({
-            route: 'Colores',
-            colores
+            colors: colores
         });
     } catch (error) {
         console.error(error);

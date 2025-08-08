@@ -1,12 +1,10 @@
-import { deleteGenre, getAllGenres, getOneGenre } from "../../models/Admin/genres.js";
+import { deleteGenre, getAllGenres, getOneGenre, insertGenre } from "../../models/Admin/genres.js";
 
 export async function getGeneros(req, res) {
     try {
         const generos = await getAllGenres();
-
         res.json({
-            route: 'Generos',
-            generos: generos,
+            genders: generos,
         });
     } catch (error) {
         console.log(error);
@@ -21,9 +19,9 @@ export async function createGenero(req, res) {
 
         if (generos.length > 0) return res.status(400).json({ message: 'El género ya existe' });
 
-        await
+        await insertGenre(genero);
 
-            res.status(200).json({ message: 'Género creado correctamente' });
+        res.status(200).json({ message: 'Género creado correctamente' });
     } catch (e) {
         console.error(e);
         res.status(500).send('Error al crear el género');
