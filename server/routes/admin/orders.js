@@ -6,7 +6,7 @@ import { isAdmin } from '../../middlewares/verifyToken.js';
 
 router.get('/', isAdmin, getOrders);
 router.get('/detailorder/:id', isAdmin, getDetailOrder);
-router.put('/changestatus', isAdmin, changeStatus)
+router.put('/changestatus/:id', isAdmin, changeStatus)
 
 export default router;
 

@@ -7,9 +7,9 @@ import { validateRegister } from '../../middlewares/validations/clientsValidatio
 import { validationErrors } from '../../middlewares/validationsErrors.js';
 
 router.get('/:id?', isAdmin, getClientes);
-router.put('/updateRol', isAdmin, updateRol);
-router.put('/updateStatus', isAdmin, updateStatus);
+router.put('/updateRol/:id', isAdmin, updateRol);
+router.put('/updateStatus/:id', isAdmin, updateStatus);
 router.delete('/delete/:id', isAdmin, deleteUser);
-router.put('/edit', isAdmin, validateRegister, validationErrors, updateUser);
+router.put('/edit/:id', isAdmin, validateRegister, validationErrors, updateUser);
 
 export default router;

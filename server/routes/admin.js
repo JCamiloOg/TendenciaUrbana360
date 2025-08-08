@@ -14,16 +14,16 @@ import clientesRouter from './admin/clientes.js';
 import ordersRouter from './admin/orders.js';
 import { verifyURL } from '../middlewares/verifyURL.js';
 
-router.use('/:typeProduct', verifyURL, productsRouter);
 
 router.use('/sizes', tallasRouter);
 router.use('/types', tiposRouter);
-router.use('/genres', generosRouter);
+router.use('/genders', generosRouter);
 router.use('/colors', coloresRouter);
 
 router.use('/clients', clientesRouter);
 router.use('/orders', ordersRouter);
 
+router.use('/:typeProduct', verifyURL, productsRouter);
 
 router.get('/logout', logOut);
 
