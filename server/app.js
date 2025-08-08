@@ -1,5 +1,5 @@
 import express from "express";
-import path from "path";
+import path, { join } from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import dotenv from "dotenv";
@@ -72,6 +72,12 @@ app.use(checkAuth);
 app.use(checkInfo);
 
 app.use("/", routes);
+
+app.use(express.static(path.join(__dirname, "dist")));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "dist", "index.html"))
+})
 
 
 export default app
