@@ -1,0 +1,16 @@
+/* Paginación modo oscuro */
+.rdt_Pagination button {
+    color: #e0e0e0 !important;
+    background-color: transparent !important;
+    border: none;
+    cursor: pointer;
+}
+
+.rdt_Pagination button:hover {
+    background-color: #303030 !important;
+    color: #fff !important;
+}
+
+.fbuBwg {
+    color: white !important;
+}
