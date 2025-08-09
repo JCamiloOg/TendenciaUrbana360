@@ -17,6 +17,8 @@ import Genders from "@/pages/Admin/genders";
 import Colors from "@/pages/Admin/colors";
 import Orders from "@/pages/Admin/orders";
 import Clients from "@/pages/Admin/clients";
+import ForgotPassword from "@/pages/forgotPassword";
+import ResetPassword from "@/pages/resetPassword";
 
 export default function AppRoutes() {
     return (
@@ -30,6 +32,8 @@ export default function AppRoutes() {
             <Route path="/products/search/:category?" element={<SearchProducts />} />
             <Route path="/products/:type" element={<ProductsByCategory />} />
             <Route path="/products/:type/:id" element={<Product />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/forgot-password/reset/" element={<ResetPassword />} />
 
             {/* Admin routes */}
             <Route path="/admin/clients" element={<Clients />} />

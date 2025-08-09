@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import brevo from '@getbrevo/brevo';
+import Brevo from "@getbrevo/brevo";
 import apiInstace from '../config/apiInstance.js';
 import { capitalizeFirstLetter } from '../utils/textCapitalize.js';
 import { recoverPassword, welcome } from '../utils/emailTemplates.js';
@@ -10,7 +10,7 @@ import { getClientWithEmailOrPhone, getClient, registerClient, registerClientWit
 
 dotenv.config();
 const SECRET_KEY = process.env.SECRET_KEY;
-const sendSmtpEmail = new brevo.SendSmtpEmail();
+const sendSmtpEmail = new Brevo.SendSmtpEmail();
 
 export async function register(req, res) {
     try {
@@ -263,36 +263,43 @@ export async function sendEmail(req, res) {
 }
 
 export async function forgotPassword(req, res) {
-    const { email } = req.body;
+    try {
 
-    const client = await getClientWithEmailOrPhone(email, null)
+        const { email } = req.body;
 
-    if (client.length === 0) return res.status(400).json({ message: 'El correo no está registrado.' });
+        const client = await getClientWithEmailOrPhone(email, null)
 
-    if (client[0].Estado == 'Pendiente') return res.status(400).json({ message: 'La cuenta no ha sido verificada. Verifica la cuenta para iniciar sesión.' });
-    if (client[0].Estado == 'Rechazado') return res.status(400).json({ message: 'La cuenta ha sido rechazada. Contactanos al WhatsApp para más información.' });
-    if (client[0].Estado == 'Desactivado') return res.status(400).json({ message: 'La cuenta ha sido desactivada. Contactanos al WhatsApp para más información.' });
-    if (client[0].Password == null) return res.status(401).json({ message: 'La cuenta está registrada con Google. Inicia sesión con Google sin necesidad de contraseña.' });
+        if (client.length === 0) return res.status(400).json({ message: 'El correo no está registrado.' });
 
-    const token = jwt.sign({ ID: client[0].ID }, SECRET_KEY, { expiresIn: '1h' });
+        if (client[0].Estado == 'Pendiente') return res.status(400).json({ message: 'La cuenta no ha sido verificada. Verifica la cuenta para iniciar sesión.' });
+        if (client[0].Estado == 'Rechazado') return res.status(400).json({ message: 'La cuenta ha sido rechazada. Contactanos al WhatsApp para más información.' });
+        if (client[0].Estado == 'Desactivado') return res.status(400).json({ message: 'La cuenta ha sido desactivada. Contactanos al WhatsApp para más información.' });
+        if (client[0].Password == null) return res.status(401).json({ message: 'La cuenta está registrada con Google. Inicia sesión con Google sin necesidad de contraseña.' });
 
-    sendSmtpEmail.to = [{
-        email: client[0].Correo,
-        name: `${client[0].Nombre} ${client[0].Apellido}`
-    }];
+        const token = jwt.sign({ ID: client[0].ID }, SECRET_KEY, { expiresIn: '1h' });
 
-    sendSmtpEmail.subject = 'Recuperación de contraseña';
-    sendSmtpEmail.htmlContent = recoverPassword(client[0].Nombre, client[0].Apellido, token);
-    sendSmtpEmail.sender = {
-        name: 'Tendencia Urbana 360',
-        email: 'tendenciaurbana360@gmail.com'
+        sendSmtpEmail.to = [{
+            email: client[0].Correo,
+            name: `${client[0].Nombre} ${client[0].Apellido}`
+        }];
+
+        sendSmtpEmail.subject = 'Recuperación de contraseña';
+        sendSmtpEmail.htmlContent = recoverPassword(client[0].Nombre, client[0].Apellido, token);
+        sendSmtpEmail.sender = {
+            name: 'Tendencia Urbana 360',
+            email: 'tendenciaurbana360@gmail.com'
+        }
+        await apiInstace.sendTransacEmail(sendSmtpEmail);
+        return res.status(200).json({ message: 'Revisa tu correo para recuperar la contraseña.', title: '¡Correo enviado!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al enviar el correo.' })
     }
-    await apiInstace.sendTransacEmail(sendSmtpEmail);
-    return res.status(200).json({ message: 'Revisa tu correo para recuperar la contraseña.', title: '¡Correo enviado!' });
 }
 
 export async function resetPassword(req, res) {
     const { password, confirmPassword, code } = req.body;
+    console.log(req.body)
 
     jwt.verify(code, SECRET_KEY, async (err, decode) => {
         if (err) return res.status(404).json({ message: 'Error al verificar el enlace. Solicita uno nuevo.' });
@@ -315,6 +322,17 @@ export async function resetPassword(req, res) {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         await updatePassword(hashedPassword, client[0].ID);
-        return res.status(200).json({ title: 'Contraseña actualizada correctamente.' });
+        return res.status(200).json({ message: 'Contraseña actualizada correctamente.' });
+    })
+}
+
+export async function verifyTokenForgotPassword(req, res) {
+    const { code } = req.query;
+    if (!code) return res.status(401).json({ message: 'Error al verificar el enlace. Solicita uno nuevo.', status: 401 });
+
+    jwt.verify(code, SECRET_KEY, async (err, decode) => {
+        if (err) return res.status(401).json({ message: "Error al verificar el enlace. Solicita uno nuevo", status: 401 });
+
+        return res.status(200).json({ status: 200 })
     })
 }

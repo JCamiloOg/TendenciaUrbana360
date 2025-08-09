@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import { register, checkUserGoogle, completeInfo, verifyAccount, noVerify, sendEmail, forgotPassword, resetPassword, login } from '../controllers/clientsController.js';
+import { register, checkUserGoogle, completeInfo, verifyAccount, noVerify, sendEmail, forgotPassword, resetPassword, login, verifyTokenForgotPassword } from '../controllers/clientsController.js';
 import { validateEmail, validateInfo, validatePassword, validateRegister } from '../middlewares/validations/clientsValidations.js';
 import { validationErrors } from '../middlewares/validationsErrors.js';
 import { logOut } from '../controllers/logOut.js';
@@ -32,7 +32,7 @@ router.post('/sendEmail', sendEmail);
 // router.get('/forgotPassword', (req, res) => {  });
 
 router.post('/forgotPassword/email', validateEmail, validationErrors, forgotPassword);
-// router.get('/forgotPassword/reset', (req, res) => res.render('forgotPassword', { head: 'Recuperar contraseña', type: 'reset' }));
+router.get('/forgotPassword/reset', verifyTokenForgotPassword);
 
 router.post('/resetPassword', validatePassword, validationErrors, resetPassword);
 

@@ -5,7 +5,7 @@ import { login } from "../../services/users/usersServices";
 import { Toast } from "../../hooks/useToastAlert";
 import { API_URL } from "../../config";
 import InputModal from "../Inputs/InputModal";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 
@@ -139,12 +139,12 @@ export default function ModalLogin({ isOpenModal, isVisible, close, openRegister
                                         className={`mt-2 ${errors.password ? "border-red-600 focus:ring-red-600 focus:ring-2" : "focus:ring-blue-900 focus:ring-2 focus:ring-offset-1"} block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm outline-none placeholder:text-gray-400 transition-all duration-300 `}
                                     />
                                     <p className="mb-3 mt-2 text-sm text-gray-500">
-                                        <a
-                                            href="/forgot-password"
+                                        <Link
+                                            to="/forgot-password"
                                             className="text-blue-800 hover:text-blue-600"
                                         >
                                             Olvidaste tu contraseña?
-                                        </a>
+                                        </Link>
                                     </p>
                                     <button
                                         disabled={disabled || Object.keys(errors).length > 0 ? true : false}

@@ -23,3 +23,14 @@ export async function checkUser() {
 export async function profileInfo() {
     return await axiosInstance.get(`/clientes/profile`);
 }
+
+export async function sendEmailPassword(data) {
+    return await axiosInstance.post(`/clientes/forgotPassword/email`, data);
+}
+
+export async function verifyTokenPassword(token) {
+    return await axiosInstance.get(`/clientes/forgotPassword/reset?code=${token}`);
+}
+export async function resetPassword(data) {
+    return await axiosInstance.post(`/clientes/resetPassword`, data);
+}
