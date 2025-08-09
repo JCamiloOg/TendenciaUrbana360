@@ -25,7 +25,7 @@ export function welcome(name, lastName, token) {
                         <p>Gracias por registrarte en Tendencia Urbana 360. Para completar tu registro, por favor verifica tu cuenta
                             haciendo clic en el siguiente enlace:</p>
                         <p>Nota: El enlace expira en 1 hora.</p>
-                        <a class="link" href="${process.env.CORS_ORIGIN}/clientes/verifyAccount?code=${encodeURIComponent(token)}">Verificar cuenta</a>
+                        <a class="link" href="${process.env.CORS_ORIGIN}/clients/verifyAccount?code=${encodeURIComponent(token)}">Verificar cuenta</a>
                     </html>`;
 }
 
@@ -50,6 +50,6 @@ export function recoverPassword(name, lastName, token) {
                         <h2>Querid@ ${name} ${lastName}</h2>
                         <p>Para recuperar tu contraseña por favor haz clic en el siguiente enlace:</p>
                         <p>Nota: El enlace expira en 1 hora.</p>
-                        <a class="link" href="${process.env.CORS_ORIGIN}/clientes/forgotPassword/reset?code=${encodeURIComponent(token)}">Recuperar contraseña</a>
+                        <a class="link" href="${process.env.CORS_ORIGIN}/forgot-password/reset?code=${encodeURIComponent(token)}">Recuperar contraseña</a>
                     </html>`;
 }
