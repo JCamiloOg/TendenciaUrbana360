@@ -29,10 +29,9 @@ export default function SearchProducts() {
     const [skeleton, setSkeleton] = useState(true);
     const [lastSearches, setLastSearches] = useState(localStorage.getItem("lastSearches") ? JSON.parse(localStorage.getItem("lastSearches")) : [])
 
-
     const fetchProducts = async (query, category) => {
         setSkeleton(true);
-        document.title = "Cargando..."
+        document.title = "Buscando..."
         try {
             const res = await searchProducts(query, category);
             if (res.status === 200) {
@@ -48,16 +47,15 @@ export default function SearchProducts() {
             }
             setError({ status: error?.status || 500, message: error.response?.data?.message || "Error inesperado" })
         } finally {
-            setTimeout(() => setSkeleton(false), 500);
+            setTimeout(() => setSkeleton(false), 500)
             document.title = "Búsqueda - Tendencia Urbana 360"
-
         }
     }
 
     useEffect(() => {
         startLoading();
         const query = searchParams.get("query") || '';
-        if (query || query.length > 3) {
+        if (query && query.length > 3) {
             fetchProducts(query, category);
         }
         setTimeout(() => stopLoading(), 500)
@@ -76,9 +74,8 @@ export default function SearchProducts() {
 
     useEffect(() => {
         const query = searchParams.get("query") || '';
-        if (query || query.length > 3) {
-            fetchProducts(query, category);
-        }
+        if (query || query.length > 3) fetchProducts(query, category);
+        else setSkeleton(false);
     }, [searchParams, category])
 
     if (info) return <NoInfoComplete />
@@ -108,7 +105,7 @@ export default function SearchProducts() {
                             <>
                                 <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 justify-center mt-10">
                                     {
-                                        Array.from({ length: 10 }).map((_, index) => (
+                                        Array.from({ length: 8 }).map((_, index) => (
                                             <SkeletonCard key={index} />
                                         ))
                                     }
@@ -149,10 +146,9 @@ export default function SearchProducts() {
                     }
                 </div>
                 {
-                    !searchParams.get("query") || searchParams.get("query").length < 3 || products.length == 0 ?
-                        <></>
-                        :
+                    (searchParams.get("query") && searchParams.get("query").length > 3 && products.length != 0) && (
                         <Footer />
+                    )
                 }
                 <ModalRegister close={closeRegister} isOpenModal={isOpenModalRegister} isVisible={isVisibleReigster} openLogin={open} />
                 <ModalLogin isOpenModal={isOpenModal} openRegister={openRegister} close={close} isVisible={isVisible} />
