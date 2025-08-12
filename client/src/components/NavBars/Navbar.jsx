@@ -20,7 +20,7 @@ import { useForm } from "react-hook-form";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { Button } from "../ui/button";
 
-export default function NavBar({ isLogin, openLogin, openRegister, active, productsLenght }) {
+export default function NavBar({ isLogin, openLogin, openRegister, active }) {
     const [home, setHome] = useState(false);
     const [products, setProducts] = useState(false);
     const [profile, setProfile] = useState(false);
@@ -386,7 +386,7 @@ export default function NavBar({ isLogin, openLogin, openRegister, active, produ
                                         </div>
                                         {
                                             searchHistory.length > 0 ?
-                                                <div className={`absolute ${isOpenHistoryMobile ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}  mt-1 bg-white border shadow-lg rounded-md w-full z-30}`} ref={searchHistoryRefMobile}>
+                                                <div className={`absolute ${isOpenHistoryMobile ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"} max-h-25 overflow-y-auto mt-1 bg-white border shadow-lg rounded-md w-full z-30}`} ref={searchHistoryRefMobile}>
                                                     <ul className="p-2 text-sm">
                                                         {
                                                             searchHistory.slice(0, 5).map((search, idx) => (
