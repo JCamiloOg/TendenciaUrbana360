@@ -94,20 +94,23 @@ export async function getProducts(req, res) {
 
         if (!categoriasValidas.includes(categoria)) return res.status(404).json({ message: "Pagina no encontrada." });
 
+        const page = parseInt(req.query.page) || 1;
+        const limit = 8;
+        const offset = (page - 1) * limit;
+
         if (categoria === 'perfumes') {
+            let perfumes = await getProductsCategory("Perfume", limit, offset)
 
-            let perfumes = await getProductsCategory("Perfume")
-
-            if (perfumes.length <= 0) return res.status(404).json();
+            if (perfumes.length <= 0 && page === 1) return res.status(404).json({ message: "No se encontraron productos." });
 
             return res.status(200).json({
                 products: perfumes
             });
         }
 
-        let products = await getProductsCategory(categorias[categoria]);
+        let products = await getProductsCategory(categorias[categoria], limit, offset);
 
-        if (products.length <= 0) return res.status(404).json({ message: "No se encontraron productos." });
+        if (products.length <= 0 && page === 1) return res.status(404).json({ message: "No se encontraron productos." });
 
         res.status(200).json({
             products: products
@@ -121,34 +124,16 @@ export async function getProducts(req, res) {
 
 export async function getAllProducts(req, res) {
     try {
-        let productos = await getAllExtra();
-        let productosPerfume = await getPerfumeria();
+        const page = parseInt(req.query.page) || 1;
+        const limit = 8;
+        const offset = (page - 1) * limit;
+        let productos = await getAllExtra(limit, offset);
+        let productosPerfume = await getPerfumeria(limit, offset);
 
         productos = productos.concat(productosPerfume);
 
-        let allproduct = await getAll();
-
-        const calzado = allproduct.filter(row => row.Tipo_Producto == 'Calzado');
-        const camisas = allproduct.filter(row => row.Tipo_Producto == 'Camisa');
-        const pantalones = allproduct.filter(row => row.Tipo_Producto == 'Pantalon');
-        const gorras = allproduct.filter(row => row.Tipo_Producto == 'Gorra');
-        const gafas = allproduct.filter(row => row.Tipo_Producto == 'Gafas');
-        const relojes = allproduct.filter(row => row.Tipo_Producto == 'Reloj');
-        const vapers = allproduct.filter(row => row.Tipo_Producto == 'Vapeador');
-        const perfumes = allproduct.filter(row => row.Tipo_Producto == 'Perfume');
-
         res.status(200).json({
             products: productos,
-            productsLength: {
-                calzado: calzado.length,
-                camisas: camisas.length,
-                pantalones: pantalones.length,
-                gorras: gorras.length,
-                gafas: gafas.length,
-                relojes: relojes.length,
-                vapers: vapers.length,
-                perfumes: perfumes.length
-            }
         });
     } catch (e) {
         console.error(e);

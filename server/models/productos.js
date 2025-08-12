@@ -45,9 +45,9 @@ export async function getDescription(id) {
 }
 
 
-export async function getProductsCategory(table) {
+export async function getProductsCategory(table, limit, offset) {
     try {
-        const [rows] = await conn.query(`SELECT p.*, e.Imagen FROM productos p INNER JOIN ${table === "Perfume" ? "perfumeria" : "extras"} e ON p.Id_producto =  e.Id_producto WHERE Tipo_Producto = ? AND Estado = ? GROUP BY p.Id_producto ORDER BY p.Id_producto DESC`, [table, 'Activado']);
+        const [rows] = await conn.query(`SELECT p.*, e.Imagen FROM productos p INNER JOIN ${table === "Perfume" ? "perfumeria" : "extras"} e ON p.Id_producto =  e.Id_producto WHERE Tipo_Producto = ? AND Estado = ? AND e.Imagen like '%.webp%' GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT ${limit} OFFSET ${offset}`, [table, 'Activado']);
 
         return rows;
     } catch (e) {
@@ -56,9 +56,9 @@ export async function getProductsCategory(table) {
     }
 }
 
-export async function getAllExtra() {
+export async function getAllExtra(limit, offset) {
     try {
-        let [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN extras e ON p.`Id_producto` =  e.`Id_producto` WHERE Estado = ? GROUP BY p.Id_producto ORDER BY p.`Id_producto` DESC", ['Activado']);
+        const [rows] = await conn.query(`SELECT p.*, e.Imagen FROM productos p INNER JOIN extras e ON p.Id_producto =  e.Id_producto WHERE Estado = ? AND e.Imagen like '%.webp%' GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT ${limit} OFFSET ${offset} `, ['Activado']);
 
         return rows;
     } catch (e) {
@@ -67,9 +67,9 @@ export async function getAllExtra() {
     }
 }
 
-export async function getPerfumeria() {
+export async function getPerfumeria(limit, offset) {
     try {
-        let [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN perfumeria e ON p.`Id_producto` =  e.`Id_producto` WHERE Estado = ? GROUP BY p.Id_producto ORDER BY p.`Id_producto` DESC", ['Activado'])
+        const [rows] = await conn.query(`SELECT p.*, e.Imagen FROM productos p INNER JOIN perfumeria e ON p.Id_producto =  e.Id_producto WHERE Estado = ? AND e.Imagen like '%.webp%' GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT ${limit} OFFSET ${offset} `, ['Activado'])
 
         return rows;
     } catch (e) {

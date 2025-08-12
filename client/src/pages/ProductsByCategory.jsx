@@ -1,6 +1,6 @@
 // Modules
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Components
 import Loader from "@/components/Loader";
@@ -19,6 +19,7 @@ import { getProductsByCategory } from "@/services/productsService";
 import { textCapitalize } from "@/utils/formatText";
 import Title from "@/components/Tittle";
 import Divider from "@/components/Divider";
+import { SkeletonCard } from "@/components/ui/SkeletonCard";
 
 export default function ProductsByCategory() {
     const { type } = useParams();
@@ -26,39 +27,67 @@ export default function ProductsByCategory() {
     const [isLogin, setIsLogin] = useState(null);
     const [error, setError] = useState(null);
     const [info, setInfo] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [page, setPage] = useState(1);
+    const loaderRef = useRef(null)
 
     const { isOpenModal, isVisible, close, open } = useModalLogin();
     const { isOpenModalRegister, isVisibleReigster, openRegister, closeRegister } = useModalRegister();
     const { loading, startLoading, stopLoading } = usePageLoader();
 
-    const [products, setProducts] = useState([]);
 
-    const getProducts = async () => {
-        startLoading();
+    const getProducts = async (pageNumber) => {
+        setLoadingMore(true);
         try {
-            const res = await getProductsByCategory(type);
-            if (res.status === 200) {
-                setIsLogin(res.data.user);
-                setProducts(res.data.products);
-            }
+            if (pageNumber === 1) startLoading();
+            const res = await getProductsByCategory(type, pageNumber);
 
+            if (res.status === 200) {
+                if (pageNumber === 1) {
+                    setIsLogin(res.data.user);
+                    setProducts(res.data.products);
+                } else {
+                    if (res.data.products.length === 0) setHasMore(false);
+                    else setProducts((prev) => [...prev, ...res.data.products]);
+                }
+            }
         } catch (e) {
             if (e.status === 400) {
                 setInfo(true);
                 return;
             }
-            setError({ status: e?.status || 500, message: e?.response?.data?.message || "Error inesperado" })
+            if (pageNumber === 1) setError({ status: e?.status || 500, message: e?.response?.data?.message || "Error inesperado" })
         } finally {
             stopLoading();
         }
+        setLoadingMore(false);
     }
 
     useEffect(() => {
-        getProducts();
-    }, [])
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && !loading && hasMore) setPage((prev) => prev + 1);
+            },
+            { threshold: 1 }
+        )
+        if (loaderRef.current) observer.observe(loaderRef.current);
+
+        return () => observer.disconnect();
+    }, [loadingMore, hasMore])
 
     useEffect(() => {
-        getProducts();
+        getProducts(page);
+    }, [page])
+
+    useEffect(() => {
+        setPage(1);
+        setProducts([]);
+        setHasMore(true);
+        setError(null);
+        setInfo(false);
+        getProducts(page);
     }, [type])
 
     if (error) return <Error status={error.status} error={error.message} />
@@ -77,11 +106,19 @@ export default function ProductsByCategory() {
                 <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4 justify-center ">
 
                     {
-                        products.map(({ Id_producto, Nombre, Precio, Imagen, Tipo_Producto }) => (
-                            <ProductCard ID={Id_producto} img={Imagen} name={Nombre} price={Precio} key={Id_producto} typeProduct={Tipo_Producto} />
+                        products.map(({ Id_producto, Nombre, Precio, Imagen, Tipo_Producto }, idx) => (
+                            <ProductCard ID={Id_producto} img={Imagen} name={Nombre} price={Precio} key={idx} typeProduct={Tipo_Producto} />
                         ))
                     }
+                    {
+                        loadingMore && (
+                            Array.from({ length: 8 }).map((_, idx) => (
+                                <SkeletonCard key={idx} />
+                            ))
+                        )
+                    }
                 </div>
+                <div ref={loaderRef} className="h-5"></div>
             </div>
             <Footer />
         </>
