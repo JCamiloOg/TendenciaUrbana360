@@ -2,15 +2,14 @@ import { Link, useNavigate } from "react-router-dom";
 import "../style/404.css";
 import { useEffect } from "react";
 
-export default function Error({ status, error }) {
+export default function Error({ status = 500, error = "Error inesperado" }) {
     const navigate = useNavigate();
     useEffect(() => {
         document.title = "Error"
-        document.getElementById("root").style.backgroundColor = "#000547"
     })
     return (
-        <div className="errorBody min-h-screen w-full overflow-x-auto flex items-center justify-center relative">
-            <div className="relative flex flex-col items-center md:items-start md:flex-row">
+        <div className="min-h-screen w-full overflow-x-auto flex items-center justify-center relative bg-[#000547]">
+            <div className="relative flex flex-col items-center md:items-start md:flex-row ">
                 <svg
                     className="w-[300px] h-auto md:w-[380px] md:h-[500px]"
                     viewBox="0 0 837 1045"
@@ -57,7 +56,7 @@ export default function Error({ status, error }) {
                     </g>
                 </svg>
 
-                <div className="mt-6 md:mt-35 md:ml-6 text-white font-light font-[Roboto] max-w-[90%] md:max-w-[380px] text-center md:text-left">
+                <div className="mt-7 md:mt-35 md:ml-6 text-white font-light font-[Roboto] max-w-[90%] md:max-w-[380px] text-center md:text-left">
                     <h1 className="text-4xl md:text-[60px] font-bold leading-tight mb-4">
                         {status}
                     </h1>
@@ -68,6 +67,12 @@ export default function Error({ status, error }) {
                             className="bg-[#004aad] py-2 px-6 rounded-[4px] text-white font-bold text-sm transition-all duration-300 ease-linear cursor-pointer hover:bg-[#ffd200] hover:text-black"
                         >
                             Volver
+                        </a>
+                        <a
+                            onClick={() => window.location.reload()}
+                            className="bg-[#004aad] py-2 px-6 rounded-[4px] text-white font-bold text-sm transition-all duration-300 ease-linear cursor-pointer hover:bg-[#ffd200] hover:text-black"
+                        >
+                            Recargar
                         </a>
                         <Link
                             to="/"
