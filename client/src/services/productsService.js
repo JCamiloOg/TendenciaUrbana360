@@ -4,12 +4,12 @@ export async function getProducts() {
     return await axiosInstance.get(`/`);
 }
 
-export async function getAllProducts() {
-    return await axiosInstance.get(`/products`);
+export async function getAllProducts(page) {
+    return await axiosInstance.get(`/products?page=${page}`);
 }
 
-export async function getProductsByCategory(category) {
-    return await axiosInstance.get(`/products/${category}`);
+export async function getProductsByCategory(category, page) {
+    return await axiosInstance.get(`/products/${category}?page=${page}`);
 
 }
 
