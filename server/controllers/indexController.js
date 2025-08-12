@@ -8,29 +8,8 @@ export async function getProducts(req, res) {
 
         productos = productos.concat(productosPerfume);
 
-        let allproduct = await getAll();
-
-        const calzado = allproduct.filter(row => row.Tipo_Producto == 'Calzado');
-        const camisas = allproduct.filter(row => row.Tipo_Producto == 'Camisa');
-        const pantalones = allproduct.filter(row => row.Tipo_Producto == 'Pantalon');
-        const gorras = allproduct.filter(row => row.Tipo_Producto == 'Gorra');
-        const gafas = allproduct.filter(row => row.Tipo_Producto == 'Gafas');
-        const relojes = allproduct.filter(row => row.Tipo_Producto == 'Reloj');
-        const vapers = allproduct.filter(row => row.Tipo_Producto == 'Vapeador');
-        const perfumes = allproduct.filter(row => row.Tipo_Producto == 'Perfume');
-
         res.status(200).json({
             products: productos,
-            productsLength: {
-                calzado: calzado.length,
-                camisas: camisas.length,
-                pantalones: pantalones.length,
-                gorras: gorras.length,
-                gafas: gafas.length,
-                relojes: relojes.length,
-                vapers: vapers.length,
-                perfumes: perfumes.length
-            }
         });
     } catch (e) {
         console.error(e);
