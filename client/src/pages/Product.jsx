@@ -178,7 +178,7 @@ export default function Product() {
                             description && description.length > 0 ?
                                 <div className="mb-10 text-2xl font-semibold uppercase">
                                     <h5 className="mb-5">Descripción: </h5>
-                                    <h5 className="text-center font-medium">{description[0].Descripcion}</h5>
+                                    <p className="text-center font-medium 2xl:text-xl xl:text-lg lg:text-lg md:text-sm sm:text-sm text-sm ">{description[0].Descripcion}</p>
                                 </div>
                                 :
                                 <></>
