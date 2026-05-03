@@ -19,7 +19,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Toast } from "@/hooks/useToastAlert";
 import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { IMG_URL } from "@/config";
 import DatePicker from "@/components/Inputs/DatePicker";
 import ModalImage from "@/components/Modals/ModalImage";
 import { formatDate } from "@/utils/formatDate";
@@ -310,7 +309,7 @@ export default function Orders() {
                                                     <TableCell>{row.Nombre}</TableCell>
                                                     <TableCell>{row.Color}</TableCell>
                                                     <TableCell>{row.Talla}</TableCell>
-                                                    <TableCell><img onClick={() => handleImage(IMG_URL + row.Imagen)} className="cursor-pointer" src={IMG_URL + row.Imagen} width={100} alt={row.Nombre} /></TableCell>
+                                                    <TableCell><img onClick={() => handleImage(row.Imagen)} className="cursor-pointer" src={row.Imagen} width={100} alt={row.Nombre} /></TableCell>
                                                     <TableCell>{row.Cantidad}</TableCell>
                                                     <TableCell>{formatCurrency(row.Total)}</TableCell>
                                                 </TableRow>

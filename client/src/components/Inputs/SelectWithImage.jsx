@@ -1,4 +1,3 @@
-import { IMG_URL } from "@/config"
 
 export default function ImageSelector({ options, onSelect, selectedId }) {
     return (
@@ -11,7 +10,7 @@ export default function ImageSelector({ options, onSelect, selectedId }) {
                         ? "border-[#002960] shadow-xl" : "border-gray-300 hover:border-[#004aad]"}`}
                 >
                     <img
-                        src={IMG_URL + option.Imagen}
+                        src={option.Imagen}
                         alt={option.Color}
                         className="w-full h-24 object-cover"
                     />

@@ -2,7 +2,6 @@ import ModalImage from "@/components/Modals/ModalImage";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { IMG_URL } from "@/config";
 import { useState } from "react";
 import ModalEditExtra from "./modalEditExtra";
 import { Toast } from "@/hooks/useToastAlert";
@@ -85,7 +84,7 @@ export default function ModalViewMore({ isOpen, setIsOpen, products = [], catego
                                                     :
                                                     <TableCell>{product.Color}</TableCell>
                                             }
-                                            <TableCell><img onClick={() => openImage(IMG_URL + product.Imagen)} src={IMG_URL + product.Imagen} width={100} alt={product.Nombre} className="cursor-pointer" /></TableCell>
+                                            <TableCell><img onClick={() => openImage(product.Imagen)} src={product.Imagen} width={100} alt={product.Nombre} className="cursor-pointer" /></TableCell>
                                             <TableCell><Button onClick={() => fetchInfo(product.ID)} className="bg-blue-600 hover:bg-blue-900 cursor-pointer">Editar</Button></TableCell>
                                         </TableRow>
                                     ))

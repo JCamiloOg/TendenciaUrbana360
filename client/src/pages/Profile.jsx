@@ -22,7 +22,6 @@ import { profileInfo } from "../services/users/usersServices";
 import useDynamicColumns from "@/hooks/useDynamicColumns";
 import { Toast } from "@/hooks/useToastAlert";
 import { getOrderByID } from "@/services/users/ordersServices";
-import { IMG_URL } from "@/config";
 import formatCurrency from "@/utils/formatCurrency";
 import useIsMobile from "@/hooks/useIsMobile";
 import { checkAuth } from "@/services/users/updateInfoServices";
@@ -324,7 +323,7 @@ export default function Profile() {
                                                     <TableCell>{pro.Nombre}</TableCell>
                                                     <TableCell>{pro.Color ? pro.Color : "No aplica"}</TableCell>
                                                     <TableCell>{pro.Talla ? pro.Talla : "No aplica"}</TableCell>
-                                                    <TableCell><img width={150} src={`${IMG_URL}${pro.Imagen}`} alt={pro.Nombre} /></TableCell>
+                                                    <TableCell><img width={150} src={`${pro.Imagen}`} alt={pro.Nombre} /></TableCell>
                                                     <TableCell>{formatCurrency(pro.Total)}</TableCell>
                                                 </TableRow>
                                             ))}
@@ -334,9 +333,9 @@ export default function Profile() {
                                     <ul className="flex flex-col w-full">
                                         {
                                             detailOrders.map((pro, index) => (
-                                                <li className="border-gray-400 flex flex-row mb-2 text-left" onClick={() => handleModalImage(IMG_URL + pro.Imagen)} key={index}>
+                                                <li className="border-gray-400 flex flex-row mb-2 text-left" onClick={() => handleModalImage(pro.Imagen)} key={index}>
                                                     <div className="select-none cursor-pointer bg-gray-200 rounded-md flex flex-1 items-center p-4  transition duration-500 ease-in-out transform hover:-translate-y-1 hover:shadow-lg">
-                                                        {/* <div className="flex flex-col rounded-md w-10 h-10 bg-gray-300 justify-center items-center mr-4"><img src={`${IMG_URL}${pro.Imagen}`} alt={pro.Nombre} /></div> */}
+                                                        {/* <div className="flex flex-col rounded-md w-10 h-10 bg-gray-300 justify-center items-center mr-4"><img src={`${pro.Imagen}`} alt={pro.Nombre} /></div> */}
                                                         <div className="flex-1 pl-1 mr-16">
                                                             <div className="font-medium decoration-0 underline" >{pro.Nombre}</div>
                                                             <div className="text-gray-600 text-sm">Talla: {`${pro.Talla ? pro.Talla : "No aplica"}`}</div>

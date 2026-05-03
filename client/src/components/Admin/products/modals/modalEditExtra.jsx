@@ -1,7 +1,6 @@
 import Select from "@/components/Inputs/Select";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { IMG_URL } from "@/config";
 import { useSelects } from "@/context/selectsContext";
 import { Toast } from "@/hooks/useToastAlert";
 import { updateImage, updateModel } from "@/services/admin/products";
@@ -167,7 +166,7 @@ export default function ModalEditExtra({ isOpen, setIsOpen, info, id }) {
                     <form onSubmit={formImage.handleSubmit(onSubmitImage)}>
                         <hr className="my-4" />
                         <h3 className="font-semibold my-4">Imagen actual</h3>
-                        <img src={IMG_URL + info.Imagen} width={200} alt="" />
+                        <img src={info.Imagen} width={200} alt="" />
                         <InputFile error={formImage.formState.errors.imagen?.message} {...formImage.register("imagen", { required: "Selecciona una imagen" })} />
                         <hr className="my-4" />
                         <Button disabled={disabledImage || Object.keys(formImage.formState.errors).length > 0} type="submit" className="bg-blue-700 hover:bg-blue-900 cursor-pointer mt-4">Cambiar imagen</Button>

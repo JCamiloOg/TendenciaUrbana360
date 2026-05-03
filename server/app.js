@@ -67,17 +67,12 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user, done) => {
     done(null, user)
 });
-app.use("/images", express.static(path.join(__dirname, "public/images")));
+
 app.use(checkAuth);
 app.use(checkInfo);
 
 app.use("/", routes);
 
-app.use(express.static(path.join(__dirname, "dist")));
-
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "dist", "index.html"))
-})
 
 
 export default app

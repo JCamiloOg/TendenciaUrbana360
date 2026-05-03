@@ -1,9 +1,8 @@
-import { IMG_URL } from "@/config";
 import { formatTypeProduct } from "@/utils/formatUrl";
 import { Link } from "react-router-dom";
 
 export default function ProductCard({ ID, img, name, price, typeProduct }) {
-    const image = `${IMG_URL}${img}`
+    const image = `${img}`
     return (
         <Link to={`/products/${formatTypeProduct(typeProduct)}/${ID}`} className="max-w-sm hover:text-blue-400 transition-all bg-white rounded-xl cursor-pointer shadow-lg overflow-hidden hover:shadow-xl duration-300">
             <img className="w-100 h-70 object-cover" src={image} alt={name} />

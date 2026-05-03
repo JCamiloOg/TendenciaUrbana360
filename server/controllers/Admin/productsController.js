@@ -6,6 +6,7 @@ import { getAllColors, getAllGenres, getAllProducts, getAllSizes, getAllTypes, g
 import { insertDescriptionForProduct, insertModelForProduct, insertPerfumeriaForProduct, insertProduct, insertSizesForProduct } from '../../models/Admin/products/create.js';
 import { deleteModel, deleteSize } from '../../models/Admin/products/delete.js';
 import { updateDescription, updateImage, updateModel, updateModelPerfumeria, updateProduct, updateStatus } from '../../models/Admin/products/update.js';
+import FormData from 'form-data';
 
 dotenv.config();
 
@@ -148,13 +149,9 @@ export async function addModelo(req, res) {
                 .toFile(fileWebp);
 
             fs.unlinkSync(filePath);
-        } else {
-            extEnd = '.mp4';
-            const fileMp4 = path.join('public/images', nombreSinExtension + '.mp4');
 
-            fs.rename(filePath, fileMp4, (err) => {
-                if (err) return res.status(500).json({ message: 'Error al subir el video' });
-            })
+        } else {
+            return res.status(400).json({ message: 'Formato de imagen inválido' });
         }
 
         const { id, tipo, sexo, color, precio } = req.body;

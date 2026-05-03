@@ -19,7 +19,6 @@ import useCart from "@/hooks/useCart"
 import { getCart, getCartStorage } from "@/services/cartService";
 
 //utils
-import { IMG_URL } from "@/config";
 
 
 export default function Cart({ isOpen, updateVal }) {
@@ -139,8 +138,8 @@ export default function Cart({ isOpen, updateVal }) {
                                                 <li className="flex py-6" key={idx}>
                                                     {
                                                         !isMobile ?
-                                                            <div onClick={() => handleModalImage(IMG_URL + item.Imagen)} className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200 cursor-pointer">
-                                                                <img src={IMG_URL + item.Imagen} alt={item.Nombre} className="size-full object-cover" />
+                                                            <div onClick={() => handleModalImage(item.Imagen)} className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200 cursor-pointer">
+                                                                <img src={item.Imagen} alt={item.Nombre} className="size-full object-cover" />
                                                             </div>
                                                             :
                                                             <></>

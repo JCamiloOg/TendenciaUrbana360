@@ -27,7 +27,6 @@ import useCart from "../hooks/useCart.js";
 
 // Services
 import { getProductByID } from "@/services/productsService";
-import { IMG_URL } from "@/config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { usePrevNextButtons } from "@/hooks/usePrevNextButtons";
 
@@ -150,12 +149,12 @@ export default function Product() {
                             <div className="flex">
                                 {
                                     extra.map((item, idx) => (
-                                        <div className="flex-[0_0_100%] px-2 cursor-pointer" onClick={() => handleModalImg(`${IMG_URL}${item.Imagen}`)} key={idx}>
+                                        <div className="flex-[0_0_100%] px-2 cursor-pointer" onClick={() => handleModalImg(`${item.Imagen}`)} key={idx}>
                                             {
                                                 getExtension(item.Imagen) === 'webp' ?
-                                                    <img src={`${IMG_URL}${item.Imagen}`} alt={product.Nombre} />
+                                                    <img src={`${item.Imagen}`} alt={product.Nombre} />
                                                     :
-                                                    <video src={`${IMG_URL}${item.Imagen}`} className="h-200" muted controls={false} autoPlay loop></video>
+                                                    <video src={`${item.Imagen}`} className="h-200" muted controls={false} autoPlay loop></video>
                                             }
                                         </div>
                                     ))

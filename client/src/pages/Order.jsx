@@ -8,7 +8,6 @@ import ButtonBlank from "@/components/Buttons/ButtonBlank";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faHouse, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import formatCurrency from "@/utils/formatCurrency";
-import { IMG_URL } from "@/config";
 import ModalImage from "@/components/Modals/ModalImage";
 import Loader from "@/components/Loader";
 import Footer from "@/components/Footer";
@@ -281,8 +280,8 @@ export default function Order() {
                                         {
                                             order.map((item, idx) => (
                                                 <li className="flex py-6" key={idx}>
-                                                    <div onClick={() => handleModalImage(IMG_URL + item.Imagen)} className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200 cursor-pointer">
-                                                        <img src={IMG_URL + item.Imagen} alt={item.Nombre} className="size-full object-cover" />
+                                                    <div onClick={() => handleModalImage(item.Imagen)} className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200 cursor-pointer">
+                                                        <img src={item.Imagen} alt={item.Nombre} className="size-full object-cover" />
                                                     </div>
                                                     <div className="ml-4 flex flex-1 flex-col">
                                                         <div>
