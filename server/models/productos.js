@@ -69,7 +69,7 @@ export async function getAllExtra(limit, offset) {
 
 export async function getPerfumeria(limit, offset) {
     try {
-        const [rows] = await conn.query(`SELECT p.*, e.Imagen FROM productos p INNER JOIN perfumeria e ON p.Id_producto =  e.Id_producto WHERE Estado = ? AND e.Imagen like '%.webp%' GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT ${limit} OFFSET ${offset} `, ['Activado'])
+        const [rows] = await conn.query(`SELECT p.*, e.Image FROM productos INNER JOIN ( SELECT  Id_producto, MIN(Imagen) AS Imagen FROM perfumeria WHERE Imagen LIKE '%.webp%' GROUP BY Id_product ) e ON p.Id_producto = e.Id_product WHERE p.Estado =  ORDER BY p.Id_producto DES LIMIT ${limit} OFFSET ${offset};`, ['Activado'])
 
         return rows;
     } catch (e) {
