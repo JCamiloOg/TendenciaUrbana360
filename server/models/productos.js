@@ -47,7 +47,7 @@ export async function getDescription(id) {
 
 export async function getProductsCategory(table, limit, offset) {
     try {
-        const [rows] = await conn.query(`SELECT p.*, e.Imagen FROM productos p INNER JOIN ${table === "Perfume" ? "perfumeria" : "extras"} e ON p.Id_producto =  e.Id_producto WHERE Tipo_Producto = ? AND Estado = ? AND e.Imagen like '%.webp%' GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT ${limit} OFFSET ${offset}`, [table, 'Activado']);
+        const [rows] = await conn.query(`SELECT p.*, ANY_VALUE(e.Imagen) AS Imagen FROM productos p INNER JOIN ${table === "Perfume" ? "perfumeria" : "extras"} e ON p.Id_producto = e.Id_producto WHERE p.Tipo_Producto = ?   AND p.Estado = ?   AND e.Imagen LIKE '%.webp%' GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT ${limit} OFFSET ${offset};`, [table, 'Activado']);
 
         return rows;
     } catch (e) {
@@ -58,7 +58,7 @@ export async function getProductsCategory(table, limit, offset) {
 
 export async function getAllExtra(limit, offset) {
     try {
-        const [rows] = await conn.query(`SELECT p.*, e.Imagen FROM productos p INNER JOIN extras e ON p.Id_producto =  e.Id_producto WHERE Estado = ? AND e.Imagen like '%.webp%' GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT ${limit} OFFSET ${offset} `, ['Activado']);
+        const [rows] = await conn.query(`SELECT p.*, e.Imagen FROM productos p INNER JOIN (SELECT Id_producto, MIN(Imagen) AS Imagen FROM extras WHERE Imagen LIKE '%.webp%' GROUP BY Id_producto ) e ON p.Id_producto = e.Id_producto WHERE p.Estado = ? ORDER BY p.Id_producto DESC LIMIT ${limit} OFFSET ${offset}`, ['Activado']);
 
         return rows;
     } catch (e) {
@@ -93,16 +93,13 @@ export async function getProductsBySearch(query, category) {
     try {
         if (category) {
             if (category === "Perfume") {
-                const [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN perfumeria e ON p.Id_producto = e.Id_producto WHERE Nombre LIKE ? AND p.Tipo_Producto = ? AND p.Estado = ? GROUP BY p.Id_producto", [`%${query}%`, category, 'Activado']);
+                const [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN (SELECT Id_producto, MIN(Imagen) AS Imagen FROM perfumeria GROUP BY Id_producto ) e ON p.Id_producto = e.Id_producto WHERE p.Nombre LIKE ? AND p.Tipo_Producto = ? AND p.Estado = ?;", [`%${query}%`, category, 'Activado']);
                 return rows;
             }
-            const [rows] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN extras e ON p.Id_producto = e.Id_producto WHERE Nombre LIKE ? AND p.Tipo_Producto = ? AND p.Estado = ? GROUP BY p.Id_producto", [`%${query}%`, category, 'Activado']);
-            return rows;
+            const [rows] = await conn.query(` SELECT p.*, e.Imagen FROM productos p INNER JOIN ( SELECT Id_producto, MIN(Imagen) AS Imagen FROM extras GROUP BY Id_producto ) e ON p.Id_producto = e.Id_producto WHERE  p.Nombre LIKE ? AND p.Tipo_Producto = ? AND p.Estado = ?`, [`%${query}%`, category, 'Activado']); return rows;
         } else {
-            const [perfumes] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN perfumeria e ON p.Id_producto = e.Id_producto WHERE p.Nombre LIKE ? AND p.Estado = ? GROUP BY p.Id_producto", [`%${query}%`, 'Activado']);
-
-            const [others] = await conn.query("SELECT p.*, e.Imagen FROM productos p INNER JOIN extras e ON p.Id_producto = e.Id_producto WHERE p.Nombre LIKE ? AND p.Estado = ? GROUP BY p.Id_producto", [`%${query}%`, 'Activado']);
-
+            const [perfumes] = await conn.query(` SELECT  p.*, e.Imagen FROM productos p INNER JOIN ( SELECT Id_producto, MIN(Imagen) AS Imagen FROM perfumeria GROUP BY Id_producto ) e ON p.Id_producto = e.Id_producto WHERE  p.Nombre LIKE ? AND p.Estado = ?`, [`%${query}%`, 'Activado']);
+            const [others] = await conn.query(` SELECT  p.*, e.Imagen FROM productos p INNER JOIN ( SELECT Id_producto, MIN(Imagen) AS Imagen FROM extras GROUP BY Id_producto ) e ON p.Id_producto = e.Id_producto WHERE  p.Nombre LIKE ? AND p.Estado =  `, [`%${query}%`, 'Activado']);
             return [...perfumes, ...others];
         }
     } catch (e) {
