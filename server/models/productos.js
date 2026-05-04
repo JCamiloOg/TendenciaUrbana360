@@ -47,7 +47,7 @@ export async function getDescription(id) {
 
 export async function getProductsCategory(table, limit, offset) {
     try {
-        const [rows] = await conn.query(`SELECT p.*, ANY_VALUE(e.Imagen) AS Imagen FROM productos p INNER JOIN ${table === "Perfume" ? "perfumeria" : "extras"} e ON p.Id_producto = e.Id_producto WHERE p.Tipo_Producto = ?   AND p.Estado = ?   AND e.Imagen LIKE '%.webp%' GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT ${limit} OFFSET ${offset};`, [table, 'Activado']);
+        const [rows] = await conn.query(`SELECT p.*, MIN(e.Imagen) AS Imagen FROM productos p INNER JOIN ${table === "Perfume" ? "perfumeria" : "extras"} e ON p.Id_producto = e.Id_producto WHERE p.Tipo_Producto = ?   AND p.Estado = ?   AND e.Imagen LIKE '%.webp%' GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT ${limit} OFFSET ${offset};`, [table, 'Activado']);
 
         return rows;
     } catch (e) {

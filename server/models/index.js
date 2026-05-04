@@ -2,7 +2,7 @@ import conn from "../config/db.js";
 
 export async function getExtra() {
     try {
-        let [rows] = await conn.query("SELECT p.*, ANY_VALUE(e.Imagen) AS Imagen FROM productos p INNER JOIN extras e ON p.Id_producto = e.Id_producto WHERE p.Estado = ? GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT 10", ['Activado']);
+        let [rows] = await conn.query("SELECT p.*, MIN(e.Imagen) AS Imagen FROM productos p INNER JOIN extras e ON p.Id_producto = e.Id_producto WHERE p.Estado = ? GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT 10", ['Activado']);
 
         return rows;
     } catch (e) {
@@ -13,7 +13,7 @@ export async function getExtra() {
 
 export async function getPerfumeria() {
     try {
-        let [rows] = await conn.query("SELECT p.*, ANY_VALUE(e.Imagen) AS Imagen FROM productos p INNER JOIN perfumeria e ON p.Id_producto = e.Id_producto WHERE p.Estado = ? GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT 10", ['Activado'])
+        let [rows] = await conn.query("SELECT p.*, MIN(e.Imagen) AS Imagen FROM productos p INNER JOIN perfumeria e ON p.Id_producto = e.Id_producto WHERE p.Estado = ? GROUP BY p.Id_producto ORDER BY p.Id_producto DESC LIMIT 10", ['Activado'])
 
         return rows;
     } catch (e) {
