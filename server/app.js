@@ -40,6 +40,8 @@ app.use(cors({
 
 }));
 
+app.options("*", cors())
+
 app.use(
     session({
         secret: process.env.SECRET_KEY,
