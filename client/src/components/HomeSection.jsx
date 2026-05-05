@@ -9,7 +9,7 @@ export default function HomeSection({ openLogin, isLogin }) {
             className={`w-full h-screen bg-no-repeat bg-cover bg-center `} style={{ backgroundImage: `url(${pexels})` }}>
             <div className="w-[90%] mx-auto h-full flex items-center justify-between py-10">
                 <div className="">
-                    <div className="text-5xl sm:text-6xl xs:text-5xl text-left text-white font-serif font-extrabold uppercase">
+                    <div className="text-4xl sm:text-6xl xs:text-5xl text-left text-white font-serif font-extrabold uppercase">
                         <h1>Tendencia</h1>
                         <h1 className="bg-black/30 text-white rounded-sm px-1 shadow-sm shadow-white/50">Urbana</h1>
                         <h1>360</h1>
