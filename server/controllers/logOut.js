@@ -3,7 +3,11 @@ export function logOut(req, res) {
         if (err) console.log(err);
     });
 
-    res.clearCookie('token');
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+    });
     res.status(200).json({ message: 'Sesión cerrada' });
 }
 
