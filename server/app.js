@@ -40,7 +40,10 @@ app.use(cors({
 
 }));
 
-app.options("*", cors())
+app.options("*", cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true
+}));
 
 app.use(
     session({
