@@ -83,7 +83,7 @@ export async function login(req, res) {
 
         const token = jwt.sign({ id: client[0].ID, role: client[0].Rol }, SECRET_KEY, { expiresIn: '72h' });
 
-        res.cookie('token', token, { httpOnly: true, sameSite: false, maxAge: 60 * 60 * 1000 * 72, secure: true });
+        res.cookie('token', token, { httpOnly: true, sameSite: "None", maxAge: 60 * 60 * 1000 * 72, secure: true });
 
         if (client[0].Rol == 'Usuario') return res.status(200).json({ message: `Bienvenido/a ${client[0].Nombre}` })
 
@@ -108,7 +108,7 @@ export async function checkUserGoogle(req, res) {
 
             const token = jwt.sign({ id: client[0].ID, role: client[0].Rol }, SECRET_KEY, { expiresIn: '72h' });
 
-            res.cookie('token', token, { maxAge: 60 * 60 * 1000 * 72, httpOnly: true, sameSite: false, secure: true });
+            res.cookie('token', token, { maxAge: 60 * 60 * 1000 * 72, httpOnly: true, sameSite: "None", secure: true });
             return res.status(200).json({ message: "success" });
         }
 
@@ -126,7 +126,7 @@ export async function checkUserGoogle(req, res) {
 
         let token = jwt.sign({ id: user.sub, role: 'Usuario' }, SECRET_KEY, { expiresIn: '72h' });
 
-        res.cookie('token', token, { maxAge: 60 * 60 * 1000 * 72, httpOnly: true, sameSite: false, secure: true });
+        res.cookie('token', token, { maxAge: 60 * 60 * 1000 * 72, httpOnly: true, sameSite: "None", secure: true });
 
         sendSmtpEmail.to = [{
             email: user.email, name: user.displayName
