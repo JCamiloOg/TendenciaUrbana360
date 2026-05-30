@@ -92,7 +92,7 @@ export async function login(req, res) {
 
 export async function checkUserGoogle(req, res) {
     try {
-        if (!req.isAuthenticated()) return res.status(500).json({ message: 'Error al iniciar sesión con Google.' });
+        if (!req.user || !req.user._json) return res.status(500).json({ message: 'Error al iniciar sesión con Google.' });
 
         let user = req.user._json;
 
