@@ -17,11 +17,8 @@ router.post('/register', validateRegister, validationErrors, register);
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/auth/google/callback', passport.authenticate('google', {
-    successRedirect: `${process.env.CORS_ORIGIN}/login/success`,
     failureRedirect: `${process.env.CORS_ORIGIN}`,
-}));
-
-router.get('/checkuser', checkUserGoogle);
+}), checkUserGoogle);
 
 router.put('/completeInfo', validateInfo, validationErrors, completeInfo);
 

@@ -16,10 +16,6 @@ export async function logOut() {
     return await axiosInstance.get(`/clientes/logout`);
 }
 
-export async function checkUser() {
-    return await axiosInstance.get(`/clientes/checkuser`);
-}
-
 export async function profileInfo() {
     return await axiosInstance.get(`/clientes/profile`);
 }

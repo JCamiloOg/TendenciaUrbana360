@@ -92,7 +92,7 @@ export async function login(req, res) {
 
 export async function checkUserGoogle(req, res) {
     try {
-        if (!req.user || !req.user._json) return res.status(500).json({ message: 'Error al iniciar sesión con Google.' });
+        if (!req.user || !req.user._json) return res.redirect(`${process.env.CORS_ORIGIN}/login/success?message=Error al iniciar sesión con Google.&status=500`);
 
         let user = req.user._json;
 
@@ -100,22 +100,18 @@ export async function checkUserGoogle(req, res) {
         const client = await getClient(user.sub)
 
         if (client.length > 0) {
-            if (client[0].Estado == 'Desactivado') return res.status(400).json({ message: 'La cuenta ha sido desactivada. Escribenos al WhatsApp para más información.', title: 'No fue posible ingresar con Google' });
+            if (client[0].Estado == 'Desactivado') return res.redirect(`${process.env.CORS_ORIGIN}/login/success?message=La cuenta ha sido desactivada. Escribenos al WhatsApp para más información.&title=No fue posible ingresar con Google&status=500`);
 
             const token = jwt.sign({ id: client[0].ID, role: client[0].Rol }, SECRET_KEY, { expiresIn: '72h' });
 
             res.cookie('token', token, { maxAge: 60 * 60 * 1000 * 72, httpOnly: true, sameSite: "None", secure: true });
-            return res.status(200).json({ message: "success" });
+            return res.redirect(`${process.env.CORS_ORIGIN}/login/success?message=success&status=200`);
         }
 
         const email = await getClientWithEmailOrPhone(user.email, null)
 
         if (email.length > 0) {
-            return res.status(400).json({
-                title: 'No fue posible ingresar con Google.',
-                message: 'El correo ya está registrado sin cuenta de Google, no es posible iniciar sesión. Ingresa con tus credenciales.',
-                status: '400'
-            });
+            return res.redirect(`${process.env.CORS_ORIGIN}/login/success?message=El correo ya está registrado sin cuenta de Google, no es posible iniciar sesión. Ingresa con tus credenciales.&title=No fue posible ingresar con Google&status=400`);
         }
 
         await registerClientWithGoogle(user.sub, user.email);
@@ -136,7 +132,7 @@ export async function checkUserGoogle(req, res) {
             }
         });
 
-        return res.status(200).json({ message: "success" })
+        return res.redirect(`${process.env.CORS_ORIGIN}/login/success?message=success&status=200`);
     } catch (e) {
         console.error(e);
         return res.status(500).json({ message: 'Error al iniciar sesión con Google.' });

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"
-import { checkUser } from "../services/users/usersServices";
+import { useNavigate, useSearchParams } from "react-router-dom"
 import Loader from "../components/Loader";
 import { usePageLoader } from "../hooks/useLoader";
 import Error from "./Error";
@@ -9,21 +8,18 @@ import Error from "./Error";
 export default function AuthUser() {
     const navigate = useNavigate();
     const { loading, startLoading, stopLoading } = usePageLoader();
+    const [searchParams] = useSearchParams();
     const [error, setError] = useState(null);
 
     const checkUserGoogle = async () => {
-        try {
-            startLoading();
-            const response = await checkUser();
+        startLoading();
+        const message = searchParams.get("message");
+        const status = searchParams.get("status");
 
-            if (response.status === 200) navigate("/");
+        if (status == 200) navigate("/");
+        else setError({ status, message })
 
-        } catch (error) {
-            setError({ status: error.status, message: error.response?.data?.message || "Error desconocido" })
-
-        } finally {
-            stopLoading();
-        }
+        setTimeout(() => stopLoading(), 300);
     };
     useEffect(() => {
         checkUserGoogle();
