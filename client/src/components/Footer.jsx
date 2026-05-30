@@ -28,7 +28,7 @@ export default function Footer({ count = 100 }) {
                     </div>
                     <div><Link className="image page-scroll" to="/" style={{ backgroundImage: `url("${logo}")` }}></Link>
                         <p className="text-center">© {new Date().getFullYear()}</p>
-                        <p >Desarollado por: <br className="md:hidden block" /> <a className="text-yellow-300! italic hover:underline! hover:text-yellow-500!" href="https://www.instagram.com/jncamilo.dev" target="_blank">Juan Camilo</a></p>
+                        <p >Desarollado por: <br className="md:hidden block" /> <a className="text-yellow-300! italic hover:underline! hover:text-yellow-500!" href="https://www.instagram.com/jncamilo.dev" target="_blank">Juan Camilo Osorio</a></p>
                     </div>
                 </div>
             </div>

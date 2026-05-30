@@ -2,15 +2,13 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import Brevo from "@getbrevo/brevo";
-import apiInstace from '../config/apiInstance.js';
 import { capitalizeFirstLetter } from '../utils/textCapitalize.js';
 import { recoverPassword, welcome } from '../utils/emailTemplates.js';
 import { getClientWithEmailOrPhone, getClient, registerClient, registerClientWithGoogle, completeAllInfo, getStatusClient, updateStatus, updatePassword } from '../models/clients.js';
+import brevo from '../config/apiInstance.js';
 
 dotenv.config();
 const SECRET_KEY = process.env.SECRET_KEY;
-const sendSmtpEmail = new Brevo.SendSmtpEmail();
 
 export async function register(req, res) {
     try {
@@ -36,20 +34,18 @@ export async function register(req, res) {
         const token = jwt.sign({ email: correo }, SECRET_KEY, { expiresIn: '1h' });
 
         if (result.affectedRows > 0) {
-            sendSmtpEmail.to = [{
-                email: correo,
-                name: `${capitalizeFirstLetter(nombre)} ${capitalizeFirstLetter(apellido)}`
-            }];
-
-            sendSmtpEmail.subject = 'Verificación de cuenta';
-            sendSmtpEmail.htmlContent = welcome(nombre, apellido, token);
-
-            sendSmtpEmail.sender = {
-                name: 'Tendencia Urbana 360',
-                email: 'tendenciaurbana360@gmail.com'
-            }
-
-            await apiInstace.sendTransacEmail(sendSmtpEmail);
+            await brevo.transactionalEmails.sendTransacEmail({
+                to: [{
+                    email: correo,
+                    name: `${capitalizeFirstLetter(nombre)} ${capitalizeFirstLetter(apellido)}`
+                }],
+                subject: 'Verificación de cuenta',
+                htmlContent: welcome(nombre, apellido, token),
+                sender: {
+                    name: 'Tendencia Urbana 360',
+                    email: 'osoriojuancamilo315@gmail.com'
+                }
+            });
 
             return res.status(200).json({ message: 'Registro exitoso, verifica la cuenta para iniciar sesión mediante el correo enviado!' });
         } else {
@@ -128,18 +124,17 @@ export async function checkUserGoogle(req, res) {
 
         res.cookie('token', token, { maxAge: 60 * 60 * 1000 * 72, httpOnly: true, sameSite: "None", secure: true });
 
-        sendSmtpEmail.to = [{
-            email: user.email, name: user.displayName
-        }]
-
-        sendSmtpEmail.templateId = 2;
-
-        sendSmtpEmail.sender = {
-            name: 'Tendencia Urbana 360',
-            email: 'tendenciaurbana360@gmail.com'
-        }
-
-        await apiInstace.sendTransacEmail(sendSmtpEmail);
+        await brevo.transactionalEmails.sendTransacEmail({
+            to: [{
+                email: user.email, name: user.displayName
+            }],
+            subject: 'Verificación de cuenta',
+            htmlContent: welcome(user.displayName, user.email, token),
+            sender: {
+                name: 'Tendencia Urbana 360',
+                email: 'osoriojuancamilo315@gmail.com'
+            }
+        });
 
         return res.status(200).json({ message: "success" })
     } catch (e) {
@@ -189,18 +184,18 @@ export async function verifyAccount(req, res) {
         if (client[0].Estado == 'Pendiente') {
             await updateStatus(client[0].ID)
 
-            sendSmtpEmail.to = [{
-                email: client[0].Correo,
-                name: client[0].Nombre
-            }];
-
-            sendSmtpEmail.templateId = 2;
-            sendSmtpEmail.sender = {
-                name: 'Tendencia Urbana 360',
-                email: 'tendenciaurbana360@gmail.com'
-            }
-
-            await apiInstace.sendTransacEmail(sendSmtpEmail);
+            await brevo.transactionalEmails.sendTransacEmail({
+                to: [{
+                    email: client[0].Correo,
+                    name: client[0].Nombre
+                }],
+                subject: 'Verificación de cuenta',
+                htmlContent: verifyAccount(client[0].Nombre, client[0].Apellido, token),
+                sender: {
+                    name: 'Tendencia Urbana 360',
+                    email: 'osoriojuancamilo315@gmail.com'
+                }
+            });
 
             return res.status(200).json('verify');
         }
@@ -243,20 +238,18 @@ export async function sendEmail(req, res) {
 
         const token = jwt.sign({ email: client[0].Correo }, SECRET_KEY, { expiresIn: '1h' });
 
-        sendSmtpEmail.to = [{
-            email: client[0].Correo,
-            name: `${client[0].Nombre} ${client[0].Apellido}`
-        }];
-
-        sendSmtpEmail.subject = 'Verificación de cuenta';
-        sendSmtpEmail.htmlContent = welcome(client[0].Nombre, client[0].Apellido, token);
-
-        sendSmtpEmail.sender = {
-            name: 'Tendencia Urbana 360',
-            email: 'tendenciaurbana360@gmail.com'
-        }
-
-        await apiInstace.sendTransacEmail(sendSmtpEmail);
+        await brevo.transactionalEmails.sendTransacEmail({
+            to: [{
+                email: client[0].Correo,
+                name: `${client[0].Nombre} ${client[0].Apellido}`
+            }],
+            subject: 'Verificación de cuenta',
+            htmlContent: welcome(client[0].Nombre, client[0].Apellido, token),
+            sender: {
+                name: 'Tendencia Urbana 360',
+                email: 'osoriojuancamilo315@gmail.com'
+            }
+        });
 
         return res.status(200).json({ message: 'Revisa tu correo para verificar la cuenta.', title: '¡Correo enviado!' });
     })
@@ -278,18 +271,19 @@ export async function forgotPassword(req, res) {
 
         const token = jwt.sign({ ID: client[0].ID }, SECRET_KEY, { expiresIn: '1h' });
 
-        sendSmtpEmail.to = [{
-            email: client[0].Correo,
-            name: `${client[0].Nombre} ${client[0].Apellido}`
-        }];
+        await brevo.transactionalEmails.sendTransacEmail({
+            subject: "Recuperación de contraseña",
+            htmlContent: recoverPassword(client[0].Nombre, client[0].Apellido, token),
+            sender: {
+                name: 'Tendencia Urbana 360',
+                email: 'osoriojuancamilo315@gmail.com'
+            },
+            to: [{
+                email: client[0].Correo,
+                name: `${client[0].Nombre} ${client[0].Apellido}`
+            }]
+        });
 
-        sendSmtpEmail.subject = 'Recuperación de contraseña';
-        sendSmtpEmail.htmlContent = recoverPassword(client[0].Nombre, client[0].Apellido, token);
-        sendSmtpEmail.sender = {
-            name: 'Tendencia Urbana 360',
-            email: 'tendenciaurbana360@gmail.com'
-        }
-        await apiInstace.sendTransacEmail(sendSmtpEmail);
         return res.status(200).json({ message: 'Revisa tu correo para recuperar la contraseña.', title: '¡Correo enviado!' });
     } catch (error) {
         console.error(error);

@@ -10,7 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@getbrevo/brevo": "^2.2.0",
+    "@getbrevo/brevo": "^5.0.4",
     "axios": "^1.16.0",
     "bcrypt": "^5.1.1",
     "cookie": "^1.1.1",
