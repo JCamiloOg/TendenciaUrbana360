@@ -7,12 +7,10 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 export async function checkAuth(req, res, next) {
     const token = req.cookies.token;
-
     if (token) {
         try {
             const decoded = jwt.verify(token, SECRET_KEY);
             const client = await getClient(decoded.id);
-
             res.locals.user = { Correo: client[0].Correo, Nombre: client[0].Nombre, Apellido: client[0].Apellido };
         } catch (err) {
             console.log(err);
@@ -25,10 +23,9 @@ export async function checkAuth(req, res, next) {
     const originalJson = res.json;
     res.json = function (body) {
         if (typeof body === "object" && body !== null) {
-            body.user = res.locals.user
+            body.user = res.locals.user;
         }
         return originalJson.call(this, body);
-    }
+    };
     next();
 }
-

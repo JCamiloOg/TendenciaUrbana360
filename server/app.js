@@ -9,7 +9,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import cors from "cors"
-
+import MongoStore from "connect-mongo";
 // middlewares
 import { checkAuth } from "./middlewares/checkLogin.js";
 import { checkInfo } from "./middlewares/checkInfo.js";
@@ -47,10 +47,15 @@ app.options("*", cors({
 
 app.use(
     session({
+        name: "sessionId",
         secret: process.env.SECRET_KEY,
         resave: false,
-        saveUninitialized: true,
-        cookie: { secure: false }
+        saveUninitialized: false,
+        store: MongoStore.create({
+            mongoUrl: process.env.MONGODB_URI,
+            dbName: "tendenciaurbana360",
+            collectionName: 'sessions'
+        }),
     })
 );
 
