@@ -18,6 +18,7 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 
 
 router.get('/auth/google/callback', passport.authenticate('google', {
     failureRedirect: `${process.env.CORS_ORIGIN}`,
+    session: false
 }), checkUserGoogle);
 
 router.put('/completeInfo', validateInfo, validationErrors, completeInfo);
