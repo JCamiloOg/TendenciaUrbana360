@@ -26,6 +26,8 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
+const isProd = process.env.NODE_ENV === "production";
+
 app.use(cookieParser());
 app.use(logger("dev"));
 app.use(express.json());
@@ -56,6 +58,12 @@ app.use(
             dbName: "tendenciaurbana360",
             collectionName: 'sessions'
         }),
+        cookie: {
+            secure: isProd,
+            sameSite: isProd ? 'none' : 'lax',
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 24
+        }
     })
 );
 
