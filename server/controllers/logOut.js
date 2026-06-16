@@ -8,7 +8,6 @@ export function logOut(req, res) {
         secure: true,
         sameSite: "None",
         path: "/",
-        maxAge: 60 * 60 * 1000 * 72,
         partitioned: true
     });
 
