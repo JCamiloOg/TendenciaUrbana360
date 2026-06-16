@@ -7,7 +7,9 @@ export function logOut(req, res) {
         httpOnly: true,
         secure: true,
         sameSite: "None",
-        path: "/"
+        path: "/",
+        maxAge: 60 * 60 * 1000 * 72,
+        partitioned: true
     });
 
     res.status(200).json({ message: 'Sesión cerrada' });

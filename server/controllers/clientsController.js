@@ -79,7 +79,7 @@ export async function login(req, res) {
 
         const token = jwt.sign({ id: client[0].ID, role: client[0].Rol }, SECRET_KEY, { expiresIn: '72h' });
 
-        res.cookie('token', token, { httpOnly: true, sameSite: "None", maxAge: 60 * 60 * 1000 * 72, secure: true });
+        res.cookie('token', token, { httpOnly: true, sameSite: "None", maxAge: 60 * 60 * 1000 * 72, secure: true, path: "/", partitioned: true });
 
         if (client[0].Rol == 'Usuario') return res.status(200).json({ message: `Bienvenido/a ${client[0].Nombre}` })
 
@@ -104,7 +104,7 @@ export async function checkUserGoogle(req, res) {
 
             const token = jwt.sign({ id: client[0].ID, role: client[0].Rol }, SECRET_KEY, { expiresIn: '72h' });
 
-            res.cookie('token', token, { maxAge: 60 * 60 * 1000 * 72, httpOnly: true, sameSite: "None", secure: true });
+            res.cookie('token', token, { httpOnly: true, sameSite: "None", maxAge: 60 * 60 * 1000 * 72, secure: true, path: "/", partitioned: true });
             return res.redirect(`${process.env.CORS_ORIGIN}/login/success?message=success&status=200`);
         }
 

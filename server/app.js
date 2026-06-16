@@ -59,10 +59,12 @@ app.use(
             collectionName: 'sessions'
         }),
         cookie: {
-            secure: isProd,
-            sameSite: isProd ? 'none' : 'lax',
             httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24
+            sameSite: isProd ? "None" : "lax",
+            maxAge: 60 * 60 * 1000 * 72,
+            secure: isProd,
+            path: "/",
+            partitioned: true
         }
     })
 );
