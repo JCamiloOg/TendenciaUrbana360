@@ -180,7 +180,10 @@ export default function Order() {
                         showConfirmButton: false,
                         timer: 4000,
                         timerProgressBar: true,
-                    }).then(() => { navigate("/clients/profile") })
+                    }).then(() => {
+                        localStorage.removeItem("cart");
+                        navigate("/clients/profile");
+                    })
                 } else {
                     SwalAlert.fire({
                         icon: "error",
