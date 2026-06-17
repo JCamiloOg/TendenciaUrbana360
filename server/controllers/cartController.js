@@ -3,17 +3,20 @@ import { getAllInfoProduct, getPrice, getProduct } from "../models/cart.js";
 export async function getCart(req, res) {
     try {
         const types = { Reloj: 'relojes', Calzado: 'calzado', Camisa: 'camisas', Gafas: 'gafas', Gorra: 'gorras', Pantalon: 'pantalones', Vapeador: 'vapeadores', Perfume: 'perfumes' };
-        let cartLocal = req.session.cart;
+        let cartLocal = req.body.cart;
+
+        console.log(cartLocal);
 
         let cart = [];
 
-        if (typeof cartLocal !== 'undefined') {
-            let products = Object.keys(req.session.cart);
-            for (let product of products) {
-                let idModel = cartLocal[product].modelo;
-                let id = cartLocal[product].id;
-                let talla = cartLocal[product].talla;
-                let cantidad = cartLocal[product].cantidad;
+        if (!cartLocal) return res.status(200).json({ cart: undefined });
+
+        if (cartLocal || cartLocal.length > 0) {
+            for (let product of cartLocal) {
+                let idModel = product.modelo;
+                let id = product.id;
+                let talla = product.talla;
+                let cantidad = product.cantidad;
 
                 let producto = await getProduct(id);
 
@@ -42,7 +45,7 @@ export async function getCart(req, res) {
 
 export async function getCartStorage(req, res) {
     try {
-        res.status(200).json({ cart: req.session.cart });
+        res.status(200).json({ cart: req.body.cart });
     } catch (e) {
         console.log(e);
         res.status(500).json({ message: "Error al obtener el carrito" })
@@ -53,7 +56,7 @@ export async function saveCart(req, res) {
     try {
         const cart = req.body;
 
-        req.session.cart = cart;
+        req.body.cart = cart;
 
         res.status(200).json({ message: 'Carrito guardado' });
     } catch (e) {
@@ -64,7 +67,7 @@ export async function saveCart(req, res) {
 
 export async function updateTotalAmount(req, res) {
     try {
-        const cart = req.session.cart;
+        const cart = req.body.cart;
         if (typeof req.query.id === 'undefined') {
             let total = 0;
             let productsInCart = Object.keys(cart);

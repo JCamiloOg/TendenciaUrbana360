@@ -1,7 +1,7 @@
 import { axiosInstance } from "@/config";
 
-export async function getCart() {
-    return await axiosInstance.get(`/products/cart`);
+export async function getCart(cart) {
+    return await axiosInstance.post(`/products/cart`, { cart });
 }
 
 export async function saveCart(data) {

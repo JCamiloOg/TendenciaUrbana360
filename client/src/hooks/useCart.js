@@ -1,8 +1,7 @@
-import { getCart, saveCart } from "@/services/cartService";
 import { Toast } from "./useToastAlert";
 
 export default function useCart() {
-    let cartStorage = JSON.parse(localStorage.getItem("cart"));
+    let cartStorage = JSON.parse(localStorage.getItem("cart") || '[]');
 
     const handleAddCart = async (productSelected, sizesSelected, id, type) => {
         if (type === "perfumes") {
@@ -33,9 +32,10 @@ export default function useCart() {
         }
 
         const unique = `${productSelected || ""}${sizesSelected || ""}`;
-        const product = { id: id, modelo: productSelected, talla: sizesSelected || undefined, cantidad: 1 };
-        console.log(cartStorage);
-        if (cartStorage[unique]) {
+        const product = { unique, id: id, modelo: productSelected, talla: sizesSelected || undefined, cantidad: 1, type: type };
+        const isExistProduct = cartStorage.find(p => p.unique === unique);
+
+        if (isExistProduct) {
             return Toast.fire({
                 icon: "warning",
                 title: 'Producto ya en el carrito',
@@ -43,27 +43,20 @@ export default function useCart() {
             });
         }
 
-        cartStorage[unique] = product;
+        cartStorage.push(product);
 
-        const res = await saveCart(cartStorage);
-        if (res.status === 200) {
-            localStorage.setItem("cart", JSON.stringify(cartStorage));
-            Toast.fire({
-                icon: "success",
-                title: 'Producto agregado al carrito',
-                timer: 2000
-            })
-        } else {
-            Toast.fire({
-                icon: "error",
-                title: 'Error al agregar al carrito',
-                timer: 2000
-            })
-        }
+        localStorage.setItem("cart", JSON.stringify(cartStorage));
+
+        Toast.fire({
+            icon: "success",
+            title: 'Producto agregado al carrito',
+            timer: 2000
+        });
     }
 
-    const updateAmount = async (id, opp, updateVal, cart) => {
-        let amount = cartStorage[id].cantidad;
+    const updateAmount = async (id, opp, updateVal, fetchCart) => {
+        let product = cartStorage.find(p => p.unique === id);
+        let amount = product.cantidad;
         if (opp == "less") {
             if (amount == 1) return;
             amount--;
@@ -71,32 +64,22 @@ export default function useCart() {
             amount++
         }
 
-        cartStorage[id].cantidad = amount;
+        cartStorage = cartStorage.map(p => p.unique === id ? { ...p, cantidad: amount } : p);
 
         updateVal(amount);
 
-        localStorage.setItem("cart", JSON.stringify(cartStorage))
-        await saveCart(cartStorage);
+        fetchCart(cartStorage);
 
-        const res = await getCart();
-        if (res.status === 200) {
-            cart(res.data.cart);
-        }
+        localStorage.setItem("cart", JSON.stringify(cartStorage));
     }
 
 
-    const deleteProduct = async (id, cart) => {
-        delete cartStorage[id];
+    const deleteProduct = async (id, fetchCart) => {
+        cartStorage = cartStorage.filter(p => p.unique !== id);
+
+        fetchCart(cartStorage);
+
         localStorage.setItem("cart", JSON.stringify(cartStorage));
-
-        await saveCart(cartStorage);
-
-        const res = await getCart();
-        if (res.status === 200) {
-            cart(res.data.cart);
-        }
-
-
     }
 
     return { handleAddCart, updateAmount, deleteProduct }

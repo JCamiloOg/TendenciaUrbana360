@@ -13,7 +13,7 @@ export async function getOrder(req, res) {
 
         let token = req.headers.authorization?.split(' ')[1];
         let user;
-        let cart = req.session.cart;
+        let cart = req.body.cart;
         let newCart = [];
         let amount = 0;
         let products = 0;
@@ -71,7 +71,7 @@ export async function getOrder(req, res) {
 export async function getAdress(req, res) {
     try {
         const token = req.headers.authorization?.split(' ')[1];
-        const cart = req.session.cart;
+        const cart = req.body.cart;
         let user;
         let amount = 0;
 
@@ -144,7 +144,9 @@ export async function updateAdress(req, res) {
 
 export async function saveOrder(req, res) {
     try {
-        const cart = req.session.cart;
+        const cart = req.body.cart;
+
+        console.log(cart);
 
         const token = req.headers.authorization?.split(' ')[1];
         let user;

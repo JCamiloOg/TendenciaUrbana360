@@ -24,15 +24,18 @@ export default function Order() {
     const [isOpen, setIsOpen] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [disabled, setDisabled] = useState(false);
+    const [cartStorage] = useState(() => {
+        return JSON.parse(localStorage.getItem("cart") || "[]");
+    });
 
     const { loading, startLoading, stopLoading } = usePageLoader();
     const [adress, setAdress] = useState(null);
     const [totalProducts, setTotalProducts] = useState(null);
     const [total, setTotal] = useState(null);
     const [order, setOrder] = useState([]);
-    const [isLogin, setIsLogin] = useState(null);
+    const [_isLogin, setIsLogin] = useState(null);
     const [error, setError] = useState(null);
-    const [info, setInfo] = useState(false);
+    const [_info, setInfo] = useState(false);
     const navigate = useNavigate();
     const [isOpenModalImage, setIsOpenModalImage] = useState(false);
     const [image, setImage] = useState("");
@@ -42,7 +45,7 @@ export default function Order() {
         startLoading();
         document.title = "Cargando..."
         try {
-            const res = await getAdress();
+            const res = await getAdress(cartStorage);
             if (res.status === 200) {
                 setAdress(res.data.adress);
                 setTotalProducts(res.data.total);
@@ -75,7 +78,7 @@ export default function Order() {
         startLoading();
         document.title = "Cargando...";
         try {
-            const res = await getOrder();
+            const res = await getOrder(cartStorage);
             if (res.status === 200) {
                 setAdress(res.data.adress);
                 setOrder(res.data.cart);
@@ -168,7 +171,7 @@ export default function Order() {
             confirmButtonText: 'Confirmar'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                const res = await saveOrder(JSON.stringify({}));
+                const res = await saveOrder(cartStorage);
                 if (res.status === 200) {
                     SwalAlert.fire({
                         icon: "success",

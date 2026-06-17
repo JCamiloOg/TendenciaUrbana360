@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "nodemon server",
+    "dev": "node --watch server",
     "start": "node server"
   },
   "author": "Camilo O'g",

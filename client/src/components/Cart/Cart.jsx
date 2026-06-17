@@ -16,7 +16,7 @@ import useIsMobile from "@/hooks/useIsMobile";
 import useCart from "@/hooks/useCart"
 
 // services
-import { getCart, getCartStorage } from "@/services/cartService";
+import { getCart } from "@/services/cartService";
 
 //utils
 
@@ -25,6 +25,7 @@ export default function Cart({ isOpen, updateVal }) {
     // states
     const [open, setOpen] = useState(isOpen);
     const [cart, setCart] = useState([]);
+
     const [progress, setProgress] = useState(13);
     const [loading, setLoanding] = useState(false);
     const [total, setTotal] = useState(0);
@@ -32,16 +33,16 @@ export default function Cart({ isOpen, updateVal }) {
     const [image, setImage] = useState("");
     const [isOpenModalImage, setIsOpenModalImage] = useState(false);
 
-    // hooks
     const isMobile = useIsMobile();
     const { updateAmount, deleteProduct } = useCart();
     const navigate = useNavigate();
 
-    const fetchCart = async () => {
+
+    const fetchCart = async (cart) => {
         setLoanding(true);
         try {
             setProgress(66);
-            const res = await getCart();
+            const res = await getCart(cart);
             if (res.status === 200) {
                 setCart(res.data.cart);
             }
@@ -55,20 +56,6 @@ export default function Cart({ isOpen, updateVal }) {
         }
     }
 
-    const fetchCartStorage = async () => {
-        try {
-            const res = await getCartStorage();
-            if (res.status === 200) {
-                const cart = res.data.cart || {}
-                localStorage.setItem("cart", JSON.stringify(cart));
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }
-    useEffect(() => {
-        fetchCartStorage();
-    }, []);
 
     useEffect(() => {
         if (cart && cart.length > 0) {
@@ -80,13 +67,16 @@ export default function Cart({ isOpen, updateVal }) {
             })
             setTotal(total);
             setTotalProducts(totalProducts);
-            fetchCartStorage();
         }
     }, [cart])
 
     useEffect(() => {
         setOpen(isOpen);
-        if (isOpen == true) fetchCart();
+        if (isOpen) {
+            const cartLocal = JSON.parse(localStorage.getItem("cart") || "[]");
+
+            fetchCart(cartLocal);
+        }
         else {
             const time = setTimeout(() => {
                 setCart([]);
@@ -160,10 +150,10 @@ export default function Cart({ isOpen, updateVal }) {
                                                         <div className="flex flex-1 items-end justify-between text-sm">
                                                             <p className="text-gray-500">Cant: </p>
                                                             <div className="flex text-lg">
-                                                                <AmountButtons id={`${item.ID}${item.TallaID ? item.TallaID : ""}`} initialQty={item.Cantidad} updateQty={updateAmount} cart={setCart} />
+                                                                <AmountButtons id={`${item.ID}${item.TallaID ? item.TallaID : ""}`} initialQty={item.Cantidad} updateQty={updateAmount} cart={fetchCart} />
                                                             </div>
                                                             <div className="flex">
-                                                                <button onClick={() => deleteProduct(`${item.ID}${item.TallaID ? item.TallaID : ""}`, setCart)} type="button" className="font-medium text-red-700 hover:text-red-900 cursor-pointer">Eliminar</button>
+                                                                <button onClick={() => deleteProduct(`${item.ID}${item.TallaID ? item.TallaID : ""}`, fetchCart)} type="button" className="font-medium text-red-700 hover:text-red-900 cursor-pointer">Eliminar</button>
                                                             </div>
                                                         </div>
                                                     </div>

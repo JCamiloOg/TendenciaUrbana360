@@ -9,7 +9,6 @@ export default function AxiosInterceptorSetUp() {
     useEffect(() => {
         const requestInterceptor = axiosInstance.interceptors.request.use(
             (config) => {
-                console.log('Token:', accessToken);
                 if (accessToken) {
                     config.headers.Authorization = `Bearer ${accessToken}`;
                 }
