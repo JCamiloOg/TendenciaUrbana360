@@ -11,7 +11,7 @@ export async function getOrder(req, res) {
     try {
         const routesImages = { Reloj: 'relojes', Calzado: 'calzado', Camisa: 'camisas', Gafas: 'gafas', Gorra: 'gorras', Pantalon: 'pantalones', Vapeador: 'vapeadores', Perfume: 'perfumes' };
 
-        let token = req.cookies.token;
+        let token = req.headers.authorization?.split(' ')[1];
         let user;
         let cart = req.session.cart;
         let newCart = [];
@@ -70,7 +70,7 @@ export async function getOrder(req, res) {
 
 export async function getAdress(req, res) {
     try {
-        const token = req.cookies.token;
+        const token = req.headers.authorization?.split(' ')[1];
         const cart = req.session.cart;
         let user;
         let amount = 0;
@@ -123,7 +123,7 @@ export async function getAdress(req, res) {
 
 export async function updateAdress(req, res) {
     try {
-        const token = req.cookies.token;
+        const token = req.headers.authorization?.split(' ')[1];
         let user;
 
         jwt.verify(token, SECRET_KEY, (err, decode) => {
@@ -146,7 +146,7 @@ export async function saveOrder(req, res) {
     try {
         const cart = req.session.cart;
 
-        const token = req.cookies.token;
+        const token = req.headers.authorization?.split(' ')[1];
         let user;
 
         if (!cart) return res.redirect('/productos/carrito');

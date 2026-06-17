@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom"
 import Loader from "../components/Loader";
 import { usePageLoader } from "../hooks/useLoader";
 import Error from "./Error";
+import { useToken } from "@/hooks/useToken";
 
 
 export default function AuthUser() {
@@ -10,6 +11,7 @@ export default function AuthUser() {
     const { loading, startLoading, stopLoading } = usePageLoader();
     const [searchParams] = useSearchParams();
     const [error, setError] = useState(null);
+    const { setAccessToken } = useToken();
 
     const checkUserGoogle = async () => {
         startLoading();
@@ -18,7 +20,8 @@ export default function AuthUser() {
         const token = searchParams.get("token");
 
         if (status == 200) {
-            document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 1000 * 72}; SameSite=None; Secure; partitioned=true`;
+            setAccessToken(token);
+            localStorage.setItem("token", token);
             navigate("/");
         } else setError({ status, message });
 

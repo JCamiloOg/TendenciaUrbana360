@@ -5,7 +5,7 @@ import { clientExist, getAllDetailPerfume, getInfo, getOrders, updateEmail, upda
 const SECRET_KEY = process.env.SECRET_KEY;
 
 export async function getData(req, res) {
-    let token = req.cookies.token;
+    let token = req.headers.authorization?.split(' ')[1];
     let user;
 
     jwt.verify(token, SECRET_KEY, (err, decode) => {
@@ -37,7 +37,7 @@ export async function checkAuth(req, res) {
 export async function modify(req, res) {
     try {
         let token = req.query.code;
-        let tokenUser = req.cookies.token;
+        let tokenUser = req.headers.authorization?.split(' ')[1];
 
         let types = {
             email: 'correo',
@@ -78,7 +78,7 @@ export async function modify(req, res) {
 export async function updateInfo(req, res) {
     try {
         let { email, phone, password, lastPassword, password2, address } = req.body;
-        let token = req.cookies.token;
+        let token = req.headers.authorization?.split(' ')[1];
         let user;
 
         jwt.verify(token, SECRET_KEY, (err, decode) => {
@@ -136,7 +136,7 @@ export async function updateInfo(req, res) {
 export async function getDetailOrder(req, res) {
     try {
         let id = req.params.id;
-        let token = req.cookies.token;
+        let token = req.headers.authorization?.split(' ')[1];
         let user;
 
         jwt.verify(token, SECRET_KEY, (err, decode) => {

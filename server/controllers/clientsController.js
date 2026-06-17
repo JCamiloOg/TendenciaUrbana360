@@ -79,11 +79,10 @@ export async function login(req, res) {
 
         const token = jwt.sign({ id: client[0].ID, role: client[0].Rol }, SECRET_KEY, { expiresIn: '72h' });
 
-        res.cookie('token', token, { httpOnly: true, sameSite: "None", maxAge: 60 * 60 * 1000 * 72, secure: true, path: "/", partitioned: true });
 
-        if (client[0].Rol == 'Usuario') return res.status(200).json({ message: `Bienvenido/a ${client[0].Nombre}` })
+        if (client[0].Rol == 'Usuario') return res.status(200).json({ message: `Bienvenido/a ${client[0].Nombre}`, accessToken: token })
 
-        return res.status(200).json({ redirect: '/admin/calzado' });
+        return res.status(200).json({ redirect: '/admin/calzado', accessToken: token });
     } catch (e) {
         console.error(e);
         return res.status(400).json({ message: 'Error al iniciar sesión' });
@@ -138,7 +137,7 @@ export async function checkUserGoogle(req, res) {
 
 export async function completeInfo(req, res) {
     const { direccion, telefono, nombre, apellido } = req.body;
-    const token = req.cookies.token;
+    const token = req.headers.authorization?.split(' ')[1];
     let user;
 
     jwt.verify(token, SECRET_KEY, (err, decode) => {

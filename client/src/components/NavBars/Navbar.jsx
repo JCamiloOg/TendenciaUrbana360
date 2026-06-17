@@ -106,7 +106,9 @@ export default function NavBar({ isLogin, openLogin, openRegister, active }) {
     const exit = async () => {
         try {
             const response = await logOut()
+
             if (response.status === 200) {
+                localStorage.removeItem("token");
                 window.location.reload()
             }
 

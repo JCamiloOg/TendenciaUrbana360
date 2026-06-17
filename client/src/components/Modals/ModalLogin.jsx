@@ -6,24 +6,29 @@ import { Toast } from "../../hooks/useToastAlert";
 import { API_URL } from "../../config";
 import InputModal from "../Inputs/InputModal";
 import { Link, useNavigate } from "react-router-dom";
+import { useToken } from "@/hooks/useToken";
 
 
 
 export default function ModalLogin({ isOpenModal, isVisible, close, openRegister }) {
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const [disabled, setDisabled] = useState(null);
+    const [disabled] = useState(null);
     const navigate = useNavigate();
-
+    const { setAccessToken } = useToken();
 
     const Onsubmit = async (data) => {
         try {
             const response = await login(data);
             if (response.status === 200) {
+                setAccessToken(response.data.accessToken);
+                localStorage.setItem("token", response.data.accessToken);
+
                 if (response.data.redirect) return navigate(response.data.redirect);
                 Toast.fire({
                     icon: "success",
                     title: response.data.message
-                })
+                });
+
                 close();
                 setTimeout(() => window.location.reload(), 2999);
 
