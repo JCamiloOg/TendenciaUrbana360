@@ -15,9 +15,12 @@ export default function AuthUser() {
         startLoading();
         const message = searchParams.get("message");
         const status = searchParams.get("status");
+        const token = searchParams.get("token");
 
-        if (status == 200) navigate("/");
-        else setError({ status, message })
+        if (status == 200) {
+            document.cookie = `token=${token}; path=/; max-age=${60 * 60 * 1000 * 72}; SameSite=None; Secure; partitioned=true`;
+            navigate("/");
+        } else setError({ status, message });
 
         setTimeout(() => stopLoading(), 300);
     };

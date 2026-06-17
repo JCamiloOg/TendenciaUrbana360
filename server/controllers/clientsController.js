@@ -104,8 +104,7 @@ export async function checkUserGoogle(req, res) {
 
             const token = jwt.sign({ id: client[0].ID, role: client[0].Rol }, SECRET_KEY, { expiresIn: '72h' });
 
-            res.cookie('token', token, { httpOnly: true, sameSite: "None", maxAge: 60 * 60 * 1000 * 72, secure: true, path: "/", partitioned: true });
-            return res.redirect(`${process.env.CORS_ORIGIN}/login/success?message=success&status=200`);
+            return res.redirect(`${process.env.CORS_ORIGIN}/login/success?message=success&status=200&token=${token}`);
         }
 
         const email = await getClientWithEmailOrPhone(user.email, null)
@@ -117,8 +116,6 @@ export async function checkUserGoogle(req, res) {
         await registerClientWithGoogle(user.sub, user.email);
 
         let token = jwt.sign({ id: user.sub, role: 'Usuario' }, SECRET_KEY, { expiresIn: '72h' });
-
-        res.cookie('token', token, { maxAge: 60 * 60 * 1000 * 72, httpOnly: true, sameSite: "None", secure: true });
 
         await brevo.transactionalEmails.sendTransacEmail({
             to: [{
@@ -132,7 +129,7 @@ export async function checkUserGoogle(req, res) {
             }
         });
 
-        return res.redirect(`${process.env.CORS_ORIGIN}/login/success?message=success&status=200`);
+        return res.redirect(`${process.env.CORS_ORIGIN}/login/success?message=success&status=200&token=${token}`);
     } catch (e) {
         console.error(e);
         return res.status(500).json({ message: 'Error al iniciar sesión con Google.' });
